@@ -14,6 +14,7 @@ import httpx
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from dotenv import load_dotenv
 from pathlib import Path
+import re
 
 # Load environment variables - check multiple locations
 script_dir = Path(__file__).resolve().parent
@@ -69,6 +70,15 @@ async def startup_event():
     else:
         print("Warning: Model directory not found. Run train.py first.")
 
+# Load Knowledge Base
+try:
+    kb_path = script_dir.parent.parent / "KNOWLEDGE_BASE.txt"
+    with open(kb_path, "r", encoding="utf-8") as f:
+        knowledge_base_content = f.read()
+    print(f"Loaded Knowledge Base: {len(knowledge_base_content)} chars")
+except Exception as e:
+    print(f"Warning: Could not load KNOWLEDGE_BASE.txt: {e}")
+    knowledge_base_content = "Analyze based on standard clinical autism criteria."
 
 class ScreeningInput(BaseModel):
     """Input schema for ASD screening questionnaire"""
@@ -317,21 +327,31 @@ async def analyze_video(file: UploadFile = File(...)):
         }
         
         prompt = """
-        You are an expert clinical autism specialist. 
-        Analyze the behavior, facial expressions, eye contact, and body language of the person in this video.
-        
-        Provide ONLY the following two outputs:
-        1. **Score**: A risk score from 1-100 (1 = low risk, 100 = high indications).
-        2. **Reason**: A concise explanation of why this score was assigned based on specific visual evidence.
-        
-        Format your response exactly like this:
-        Score: [Number]
-        Reason: [Text]
-        
-        If the video is unclear or no person is visible, return:
-        Score: 0
-        Reason: Unable to analyze video.
-        """
+        You are an expert clinical autism specialist.
+    
+    Use the following CLINICAL KNOWLEDGE BASE to guide your analysis:
+    \"\"\"
+    {knowledge_base_content}
+    \"\"\"
+
+    Analyze the video for TWO distinct modalities based on the knowledge base:
+    1. **Physical Behavior**: Facial expressions, eye contact (or lack thereof), hand flapping, rocking, body language.
+    2. **Speech & Audio**: Tone fairness, prosody (monotone vs expressive), speech rate, response latency, echolalia.
+    
+    Provide EXACTLY four outputs:
+    1. **Physical Score**: Risk score 1-100 based on VISUALS (1=typical, 100=high autism traits).
+    2. **Physical Reason**: Concise explanation of the visual signs, referencing terms from the Knowledge Base (e.g. "visual stimming", "ocular behaviors").
+    3. **Speech Score**: Risk score 1-100 based on AUDIO (1=typical, 100=high autism traits).
+    4. **Speech Reason**: Concise explanation of the auditory signs, referencing terms from the Knowledge Base (e.g. "monotone prosody", "echolalia").
+    
+    Format your response exactly like this:
+    Physical Score: [Number]
+    Physical Reason: [Text]
+    Speech Score: [Number]
+    Speech Reason: [Text]
+    
+    If the video is unclear or no person/audio is present, return 0 for scores and "Unable to analyze" for reasons.
+    """
 
         payload = {
             "contents": [{
@@ -360,37 +380,47 @@ async def analyze_video(file: UploadFile = File(...)):
             # Extract text from Gemini response structure
             try:
                 analysis_text = result["candidates"][0]["content"]["parts"][0]["text"]
-                
-                # Simple parsing to extract Score and Reason
-                score = 0
-                reason = "Unable to parse analysis."
-                
-                lines = analysis_text.strip().split('\n')
-                for line in lines:
-                    if line.lower().startswith("score:"):
-                        try:
-                            score_text = line.split(":", 1)[1].strip()
-                            # Handle cases like "1 (Low Risk)" by taking just the number
-                            score = int(''.join(filter(str.isdigit, score_text.split()[0]))) 
-                        except ValueError:
-                            pass
-                    elif line.lower().startswith("reason:"):
-                        reason = line.split(":", 1)[1].strip()
-                
-                # If reason spans multiple lines (simple fallback)
-                if reason == "Unable to parse analysis." and len(lines) > 1:
-                     reason = analysis_text.replace("Score:", "").strip()
+                print(f"Gemini Raw Response: {analysis_text}") # Debug log
 
-                return {
-                    "score": score,
-                    "reason": reason
+                # Robust parsing with Regex
+                data = {
+                    "physical_score": 0,
+                    "physical_reason": "Analysis failed to extract physical reason.",
+                    "speech_score": 0,
+                    "speech_reason": "Analysis failed to extract speech reason."
                 }
-            except (KeyError, IndexError, TypeError):
+                
+                # Regex patterns (case insensitive)
+                # Matches: "Physical Score: 50" or "**Physical Score**: 50" or "1. Physical Score: 50"
+                p_score = re.search(r"physical\s+score\**\s*:\s*(\d+)", analysis_text, re.IGNORECASE)
+                s_score = re.search(r"speech\s+score\**\s*:\s*(\d+)", analysis_text, re.IGNORECASE)
+                
+                if p_score:
+                    data["physical_score"] = int(p_score.group(1))
+                
+                if s_score:
+                    data["speech_score"] = int(s_score.group(1))
+                    
+                # Extract reasons (capture everything after "Reason:" until next line or end)
+                p_reason = re.search(r"physical\s+reason\**\s*:\s*(.+?)(?=\n|speech|$)", analysis_text, re.IGNORECASE | re.DOTALL)
+                s_reason = re.search(r"speech\s+reason\**\s*:\s*(.+?)(?=$)", analysis_text, re.IGNORECASE | re.DOTALL)
+                
+                if p_reason:
+                    data["physical_reason"] = p_reason.group(1).strip()
+                if s_reason:
+                    data["speech_reason"] = s_reason.group(1).strip()
+
+                return data
+
+            except (KeyError, IndexError, TypeError) as e:
+                print(f"Parsing Error: {str(e)}")
                 print(f"Unexpected response structure: {result}")
+                # Return default zero structure instead of partial_error to avoid frontend "No data"
                 return {
-                    "status": "partial_error",
-                    "analysis": "Analysis completed but response format was unexpected.",
-                    "raw": result
+                    "physical_score": 0,
+                    "physical_reason": f"Error parsing AI response: {str(e)}",
+                    "speech_score": 0,
+                    "speech_reason": "Error parsing AI response."
                 }
                 
     except Exception as e:
@@ -400,4 +430,4 @@ async def analyze_video(file: UploadFile = File(...)):
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run(app, host="0.0.0.0", port=8000)
+    uvicorn.run("api:app", host="0.0.0.0", port=8000, reload=True)

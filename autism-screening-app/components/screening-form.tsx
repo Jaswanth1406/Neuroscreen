@@ -201,10 +201,45 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
         }
       }
 
-      // Combine results
+      // Combine results with fusion logic
+      let finalProbability = result.probability
+      let finalRiskLevel = result.risk_level
+
+      if (videoAnalysisResult?.physical_score !== undefined) {
+        // Normalize video scores (0-100 -> 0-1)
+        const physicalProb = (videoAnalysisResult.physical_score || 0) / 100
+        const speechProb = (videoAnalysisResult.speech_score || 0) / 100
+
+        // Weighted Fusion: 50% AQ-10, 25% Physical, 25% Speech
+        finalProbability = (result.probability * 0.5)
+          + (physicalProb * 0.25)
+          + (speechProb * 0.25)
+
+        // Recalculate risk level based on combined probability
+        if (finalProbability >= 0.6) finalRiskLevel = "High"
+        else if (finalProbability >= 0.4) finalRiskLevel = "Medium"
+        else finalRiskLevel = "Low"
+      } else if (videoAnalysisResult?.score) {
+        // Fallback for legacy format
+        const videoProb = videoAnalysisResult.score / 100
+        finalProbability = (result.probability * 0.7) + (videoProb * 0.3)
+      }
+
       onComplete({
         ...result,
-        video_analysis: videoAnalysisResult
+        probability: finalProbability,
+        risk_level: finalRiskLevel,
+        answers: answers,
+        demographics: demographics,
+        video_analysis: videoAnalysisResult,
+        fusion_details: videoAnalysisResult ? {
+          aq10_contribution: (result.probability * 0.5).toFixed(2),
+          physical_contribution: ((videoAnalysisResult.physical_score || 0) / 100 * 0.25).toFixed(2),
+          speech_contribution: ((videoAnalysisResult.speech_score || 0) / 100 * 0.25).toFixed(2),
+          original_aq10_prob: result.probability,
+          original_physical_score: videoAnalysisResult.physical_score || 0,
+          original_speech_score: videoAnalysisResult.speech_score || 0
+        } : null
       })
 
     } catch (error) {
@@ -231,12 +266,26 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
       }
 
       // Use mock result for demo if API fails
+      const totalScore = (Object.values(answers) as number[]).reduce((s, v) => s + v, 0)
+
+      // Generate descriptive answers for context
+      const formattedAnswers = Object.entries(answers).map(([key, value]) => {
+        const question = AQ10_QUESTIONS.find(q => q.id === key)
+        if (!question) return ""
+        if (value === 1) {
+          // User agreed
+          return question.text
+        } else {
+          // User disagreed - create negation
+          return `User did not agree that: ${question.text}`
+        }
+      })
+
       const mockResult = {
-        prediction: Object.values(answers).reduce((s, v) => s + v, 0) >= 6 ? 1 : 0,
-        probability: Object.values(answers).reduce((s, v) => s + v, 0) / 10,
-        risk_level: Object.values(answers).reduce((s, v) => s + v, 0) >= 6 ? "High" :
-          Object.values(answers).reduce((s, v) => s + v, 0) >= 4 ? "Medium" : "Low",
-        aq10_total: Object.values(answers).reduce((s, v) => s + v, 0),
+        prediction: totalScore >= 6 ? 1 : 0,
+        probability: totalScore / 10,
+        risk_level: totalScore >= 6 ? "High" : totalScore >= 4 ? "Medium" : "Low",
+        aq10_total: totalScore,
         social_score: [answers.A5_Score, answers.A6_Score, answers.A7_Score, answers.A9_Score, answers.A10_Score].reduce((s, v) => s + (v || 0), 0),
         attention_score: [answers.A1_Score, answers.A2_Score, answers.A3_Score, answers.A4_Score, answers.A8_Score].reduce((s, v) => s + (v || 0), 0),
         contributing_factors: Object.entries(answers)
@@ -248,12 +297,46 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
             value: v,
             importance: 0.1
           })),
+        answers: answers,
+        formatted_answers: formattedAnswers, // Pass new descriptive field
+        demographics: demographics,
         recommendations: [
           "This is a demo mode result. Connect to the ML backend for accurate predictions.",
           "Please consult with a healthcare professional for proper evaluation."
         ],
         video_analysis: videoAnalysisResult
       }
+
+      // Apply fusion to mock result if video exists
+      // Simulate 4-part score for mock mode
+      if (videoUrl) {
+        mockResult.video_analysis = {
+          physical_score: 65,
+          physical_reason: "Mock: Avoids direct eye contact, frequent hand fidgeting.",
+          speech_score: 40,
+          speech_reason: "Mock: Speech is slightly monotonous but responsive."
+        }
+
+        const aq10Prob = totalScore / 10
+        const physicalProb = 0.65
+        const speechProb = 0.40
+
+        const finalProb = (aq10Prob * 0.5) + (physicalProb * 0.25) + (speechProb * 0.25)
+        mockResult.probability = finalProb
+        mockResult.risk_level = finalProb >= 0.6 ? "High" : finalProb >= 0.4 ? "Medium" : "Low"
+
+        // Add mock fusion details
+        // @ts-ignore
+        mockResult.fusion_details = {
+          aq10_contribution: (aq10Prob * 0.5).toFixed(2),
+          physical_contribution: (physicalProb * 0.25).toFixed(2),
+          speech_contribution: (speechProb * 0.25).toFixed(2),
+          original_aq10_prob: aq10Prob,
+          original_physical_score: 65,
+          original_speech_score: 40
+        }
+      }
+
       onComplete(mockResult)
     } finally {
       setIsLoading(false)
@@ -416,7 +499,7 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
                         {videoFile?.name}
                       </span>
                       <span className="text-xs text-muted-foreground">
-                        ({(videoFile?.size || 0 / 1024 / 1024).toFixed(2)} MB)
+                        ({((videoFile?.size || 0) / 1024 / 1024).toFixed(2)} MB)
                       </span>
                     </div>
                     <Button

@@ -52,8 +52,20 @@ export interface ScreeningResult {
   recommendations?: string[]
   evidence_summary?: string
   video_analysis?: {
-    score: number
-    reason: string
+    score?: number // Legacy
+    reason?: string // Legacy
+    physical_score?: number
+    physical_reason?: string
+    speech_score?: number
+    speech_reason?: string
+  }
+  fusion_details?: {
+    aq10_contribution: string
+    physical_contribution: string
+    speech_contribution: string
+    original_aq10_prob: number
+    original_physical_score: number
+    original_speech_score: number
   }
 }
 

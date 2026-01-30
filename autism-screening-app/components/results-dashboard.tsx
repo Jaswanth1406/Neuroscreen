@@ -3,16 +3,17 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Progress } from "@/components/ui/progress"
 import { Separator } from "@/components/ui/separator"
-import { 
-  AlertCircle, 
-  CheckCircle2, 
+import {
+  AlertCircle,
+  CheckCircle2,
   AlertTriangle,
   Brain,
   Users,
   Eye,
   TrendingUp,
   Lightbulb,
-  Video
+  Video,
+  ClipboardList
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { ScreeningResult } from "@/app/page"
@@ -88,8 +89,8 @@ export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
                   {(result.probability * 100).toFixed(1)}%
                 </span>
               </div>
-              <Progress 
-                value={result.probability * 100} 
+              <Progress
+                value={result.probability * 100}
                 className="h-3"
                 aria-label="Confidence score progress"
               />
@@ -98,71 +99,107 @@ export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
         </CardContent>
       </Card>
 
-      {/* Score Breakdown */}
+      {/* Multi-modal Analysis Breakdown */}
       <div className="grid gap-6 md:grid-cols-3">
-        {/* AQ-10 Total */}
-        <Card>
+        {/* 1. Textual Analysis Score (AQ-10) */}
+        <Card className="border-t-4 border-t-blue-500">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <Brain className="h-5 w-5 text-primary" />
-              <CardTitle className="text-lg">AQ-10 Total</CardTitle>
+              <ClipboardList className="h-5 w-5 text-blue-500" />
+              <CardTitle className="text-lg">Textual Analysis</CardTitle>
             </div>
+            <CardDescription>AQ-10 Questionnaire</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-primary">
+            <div className="text-4xl font-bold text-blue-500 mb-2">
               {result.aq10_total}
               <span className="text-lg text-muted-foreground font-normal">/10</span>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Autism Quotient Score
-            </p>
-            <Progress value={(result.aq10_total / 10) * 100} className="mt-3 h-2" />
+            <Progress value={(result.aq10_total / 10) * 100} className="h-2 mb-4" />
+            <div className="space-y-2 text-sm text-muted-foreground">
+              <div className="flex justify-between">
+                <span>Social Traits</span>
+                <span>{result.social_score}/5</span>
+              </div>
+              <div className="flex justify-between">
+                <span>Attention Traits</span>
+                <span>{result.attention_score}/5</span>
+              </div>
+            </div>
           </CardContent>
         </Card>
 
-        {/* Social Score */}
-        <Card>
-          <CardHeader className="pb-2">
-            <div className="flex items-center gap-2">
-              <Users className="h-5 w-5 text-blue-500" />
-              <CardTitle className="text-lg">Social Communication</CardTitle>
-            </div>
-          </CardHeader>
-          <CardContent>
-            <div className="text-4xl font-bold text-blue-500">
-              {result.social_score}
-              <span className="text-lg text-muted-foreground font-normal">/5</span>
-            </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Social interaction indicators
-            </p>
-            <Progress value={(result.social_score / 5) * 100} className="mt-3 h-2" />
-          </CardContent>
-        </Card>
-
-        {/* Attention Score */}
-        <Card>
+        {/* 2. Physical Gesture Score */}
+        <Card className={cn(
+          "border-t-4",
+          !result.video_analysis?.physical_score ? "border-t-slate-200 dark:border-t-slate-800 opacity-60" : "border-t-purple-500"
+        )}>
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
               <Eye className="h-5 w-5 text-purple-500" />
-              <CardTitle className="text-lg">Attention & Detail</CardTitle>
+              <CardTitle className="text-lg">Physical Gestures</CardTitle>
             </div>
+            <CardDescription>Video Visual Analysis</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-purple-500">
-              {result.attention_score}
-              <span className="text-lg text-muted-foreground font-normal">/5</span>
+            {result.video_analysis?.physical_score !== undefined ? (
+              <>
+                <div className="text-4xl font-bold text-purple-500 mb-2">
+                  {result.video_analysis.physical_score}
+                  <span className="text-lg text-muted-foreground font-normal">/100</span>
+                </div>
+                <Progress value={result.video_analysis.physical_score} className="h-2 mb-4" />
+                <div className="max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                  <p className="text-sm text-muted-foreground">
+                    {result.video_analysis.physical_reason || "Visual analysis detected specific behavioral patterns."}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="py-6 text-center text-muted-foreground">
+                <p>No video data analyzed</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* 3. Speech Score */}
+        <Card className={cn(
+          "border-t-4",
+          !result.video_analysis?.speech_score ? "border-t-slate-200 dark:border-t-slate-800 opacity-60" : "border-t-pink-500"
+        )}>
+          <CardHeader className="pb-2">
+            <div className="flex items-center gap-2">
+              <Video className="h-5 w-5 text-pink-500" />
+              <CardTitle className="text-lg">Speech Analysis</CardTitle>
             </div>
-            <p className="text-sm text-muted-foreground mt-2">
-              Attention to detail indicators
-            </p>
-            <Progress value={(result.attention_score / 5) * 100} className="mt-3 h-2" />
+            <CardDescription>Audio & Prosody</CardDescription>
+          </CardHeader>
+          <CardContent>
+            {result.video_analysis?.speech_score !== undefined ? (
+              <>
+                <div className="text-4xl font-bold text-pink-500 mb-2">
+                  {result.video_analysis.speech_score}
+                  <span className="text-lg text-muted-foreground font-normal">/100</span>
+                </div>
+                <Progress value={result.video_analysis.speech_score} className="h-2 mb-4" />
+                <div className="max-h-32 overflow-y-auto pr-2 custom-scrollbar">
+                  <p className="text-sm text-muted-foreground">
+                    {result.video_analysis.speech_reason || "Audio analysis detected specific speech patterns."}
+                  </p>
+                </div>
+              </>
+            ) : (
+              <div className="py-6 text-center text-muted-foreground">
+                <p>No speech data analyzed</p>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
 
-      {/* Video Analysis Results */}
-      {result.video_analysis && (
+      {/* Legacy Video Analysis Block (Fallback) */}
+      {result.video_analysis?.score !== undefined && result.video_analysis?.physical_score === undefined && (
         <Card className="border-2 border-indigo-200 dark:border-indigo-800">
           <CardHeader>
             <div className="flex items-center gap-3">
@@ -170,66 +207,17 @@ export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
                 <Video className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
               </div>
               <div>
-                <CardTitle className="text-xl">Video Behavior Analysis</CardTitle>
+                <CardTitle className="text-xl">Legacy Video Analysis</CardTitle>
                 <CardDescription>
-                  AI-powered analysis of behavioral indicators from video submission
+                  Combined behavioral analysis
                 </CardDescription>
               </div>
             </div>
           </CardHeader>
           <CardContent className="space-y-4">
-            <div className="flex items-center gap-6">
-              <div className="flex-shrink-0">
-                <div className={cn(
-                  "w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold border-4",
-                  result.video_analysis.score >= 70 
-                    ? "bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400"
-                    : result.video_analysis.score >= 40 
-                      ? "bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400"
-                      : "bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700 text-green-600 dark:text-green-400"
-                )}>
-                  {result.video_analysis.score}
-                </div>
-                <p className="text-center text-xs text-muted-foreground mt-1">out of 100</p>
-              </div>
-              <div className="flex-1 space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span className="font-medium">Behavioral Indicator Score</span>
-                  <span className={cn(
-                    "font-semibold",
-                    result.video_analysis.score >= 70 
-                      ? "text-red-600 dark:text-red-400"
-                      : result.video_analysis.score >= 40 
-                        ? "text-amber-600 dark:text-amber-400"
-                        : "text-green-600 dark:text-green-400"
-                  )}>
-                    {result.video_analysis.score >= 70 ? "High" : result.video_analysis.score >= 40 ? "Moderate" : "Low"}
-                  </span>
-                </div>
-                <Progress 
-                  value={result.video_analysis.score} 
-                  className={cn(
-                    "h-3",
-                    result.video_analysis.score >= 70 
-                      ? "[&>div]:bg-red-500"
-                      : result.video_analysis.score >= 40 
-                        ? "[&>div]:bg-amber-500"
-                        : "[&>div]:bg-green-500"
-                  )}
-                />
-              </div>
-            </div>
-            
-            <Separator />
-            
-            <div>
-              <h4 className="font-semibold mb-2 flex items-center gap-2">
-                <Brain className="h-4 w-4 text-indigo-500" />
-                AI Analysis Summary
-              </h4>
-              <div className="p-4 rounded-lg bg-muted/50 text-sm leading-relaxed">
-                {result.video_analysis.reason}
-              </div>
+            <div className="flex items-center gap-4">
+              <div className="text-3xl font-bold">{result.video_analysis.score}/100</div>
+              <div className="flex-1 text-sm text-muted-foreground">{result.video_analysis.reason}</div>
             </div>
           </CardContent>
         </Card>
@@ -262,8 +250,8 @@ export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
                     <div className="flex items-center gap-2 mt-1">
                       <span className={cn(
                         "text-xs px-2 py-0.5 rounded-full",
-                        factor.value === 1 
-                          ? "bg-primary/10 text-primary" 
+                        factor.value === 1
+                          ? "bg-primary/10 text-primary"
                           : "bg-muted text-muted-foreground"
                       )}>
                         {factor.value === 1 ? "Present" : "Absent"}
@@ -313,9 +301,9 @@ export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
             <div className="text-sm text-amber-800 dark:text-amber-200">
               <p className="font-semibold mb-2">Important Disclaimer</p>
               <p>
-                This screening tool is designed to identify individuals who may benefit from a comprehensive 
-                diagnostic evaluation. It is NOT a diagnostic instrument. A positive result on this screener 
-                does not mean that the individual has Autism Spectrum Disorder (ASD). Only a qualified healthcare 
+                This screening tool is designed to identify individuals who may benefit from a comprehensive
+                diagnostic evaluation. It is NOT a diagnostic instrument. A positive result on this screener
+                does not mean that the individual has Autism Spectrum Disorder (ASD). Only a qualified healthcare
                 professional can provide a formal diagnosis after comprehensive evaluation.
               </p>
             </div>

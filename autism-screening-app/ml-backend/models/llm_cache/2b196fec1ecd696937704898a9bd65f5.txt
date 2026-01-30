@@ -1,0 +1,15 @@
+**Autism Screening Summary**
+
+**Confidence Score:** 6.1%
+**Risk Level:** Low
+
+**Key Observations:**
+• Limited face detection (0.00)
+• Reduced eye contact (0.00)
+• Low gesture frequency (0.00)
+• Low overall motion energy (0.00)
+• Brief attention periods (0.00)
+
+**Recommendation:** Continue routine developmental monitoring. Rescreen if concerns arise.
+
+**Disclaimer:** This is a computational screening tool and should not be used as a substitute for professional clinical evaluation.
