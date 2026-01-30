@@ -145,11 +145,11 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
 
   const handleSubmit = async () => {
     setIsLoading(true)
-    
+
     try {
       // Calculate total score for result field
       const aq10Total = Object.values(answers).reduce((sum, val) => sum + val, 0)
-      
+
       const requestBody = {
         ...answers,
         age: parseFloat(demographics.age),
@@ -160,7 +160,7 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
         used_app_before: demographics.used_app_before,
         result: aq10Total
       }
-      
+
       // Make prediction request
       const response = await fetch("http://localhost:8000/predict", {
         method: "POST",
@@ -169,13 +169,13 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
         },
         body: JSON.stringify(requestBody)
       })
-      
+
       if (!response.ok) {
         throw new Error("Prediction failed")
       }
-      
+
       const result = await response.json()
-      
+
       // If video was uploaded, analyze it with Gemini
       let videoAnalysisResult = null
       if (videoFile) {
@@ -183,12 +183,12 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
           console.log("Uploading video for analysis...", videoFile.name)
           const formData = new FormData()
           formData.append("file", videoFile)
-          
+
           const videoResponse = await fetch("http://localhost:8000/analyze-video", {
             method: "POST",
             body: formData,
           })
-          
+
           if (videoResponse.ok) {
             videoAnalysisResult = await videoResponse.json()
             console.log("Video analysis result:", videoAnalysisResult)
@@ -200,28 +200,28 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
           // Continue without video analysis
         }
       }
-      
+
       // Combine results
       onComplete({
         ...result,
         video_analysis: videoAnalysisResult
       })
-      
+
     } catch (error) {
       console.error("Error:", error)
-      
+
       // Try video analysis even if prediction failed
       let videoAnalysisResult = null
       if (videoFile) {
         try {
           const formData = new FormData()
           formData.append("file", videoFile)
-          
+
           const videoResponse = await fetch("http://localhost:8000/analyze-video", {
             method: "POST",
             body: formData,
           })
-          
+
           if (videoResponse.ok) {
             videoAnalysisResult = await videoResponse.json()
           }
@@ -229,13 +229,13 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
           console.error("Video analysis failed:", videoError)
         }
       }
-      
+
       // Use mock result for demo if API fails
       const mockResult = {
         prediction: Object.values(answers).reduce((s, v) => s + v, 0) >= 6 ? 1 : 0,
         probability: Object.values(answers).reduce((s, v) => s + v, 0) / 10,
-        risk_level: Object.values(answers).reduce((s, v) => s + v, 0) >= 6 ? "High" : 
-                    Object.values(answers).reduce((s, v) => s + v, 0) >= 4 ? "Medium" : "Low",
+        risk_level: Object.values(answers).reduce((s, v) => s + v, 0) >= 6 ? "High" :
+          Object.values(answers).reduce((s, v) => s + v, 0) >= 4 ? "Medium" : "Low",
         aq10_total: Object.values(answers).reduce((s, v) => s + v, 0),
         social_score: [answers.A5_Score, answers.A6_Score, answers.A7_Score, answers.A9_Score, answers.A10_Score].reduce((s, v) => s + (v || 0), 0),
         attention_score: [answers.A1_Score, answers.A2_Score, answers.A3_Score, answers.A4_Score, answers.A8_Score].reduce((s, v) => s + (v || 0), 0),
@@ -260,10 +260,10 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
     }
   }
 
-  const canProceedFromDemographics = 
-    demographics.age && 
-    demographics.gender && 
-    demographics.jaundice && 
+  const canProceedFromDemographics =
+    demographics.age &&
+    demographics.gender &&
+    demographics.jaundice &&
     demographics.austim
 
   return (
@@ -338,8 +338,8 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
                 onClick={() => setStep(i)}
                 className={cn(
                   "w-2 h-2 rounded-full transition-colors",
-                  i === step ? "bg-primary" : 
-                  answers[AQ10_QUESTIONS[i].id] !== undefined ? "bg-primary/50" : "bg-muted"
+                  i === step ? "bg-primary" :
+                    answers[AQ10_QUESTIONS[i].id] !== undefined ? "bg-primary/50" : "bg-muted"
                 )}
               />
             ))}
@@ -377,15 +377,13 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
             <p className="text-sm text-muted-foreground mt-2">
               Upload a short video for behavioral analysis. This helps improve screening accuracy.
             </p>
-            <p className="text-xs text-muted-foreground mt-1">
-              <span className="text-amber-500">⚠️ Demo Mode:</span> Video analysis ML model coming soon
-            </p>
+
           </div>
 
           <Card className="border-2 border-dashed">
             <CardContent className="pt-6">
               {!videoUrl ? (
-                <div 
+                <div
                   className="flex flex-col items-center justify-center py-10 cursor-pointer hover:bg-muted/50 rounded-lg transition-colors"
                   onClick={() => videoInputRef.current?.click()}
                 >

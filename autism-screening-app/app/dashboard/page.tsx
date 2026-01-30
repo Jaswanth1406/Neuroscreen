@@ -127,7 +127,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 md:grid-cols-4">
           <Card className="border border-white/40 shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
             <CardHeader className="flex flex-row items-center justify-between pb-2">
               <CardTitle className="text-sm font-medium text-muted-foreground">
@@ -208,6 +208,7 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
+        </div>
 
         {/* Main Content */}
         <div className="grid gap-6 lg:grid-cols-2">
@@ -238,10 +239,7 @@ export default function DashboardPage() {
                       className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-gray-800/50"
                     >
                       <div
-                        className={`p-2 rounded-lg ${task.completed
-                          ? "bg-green-100 dark:bg-green-900/50"
-                          : "bg-blue-100 dark:bg-blue-900/50"
-                          }`}
+                        className={`p-2 rounded-lg ${task.completed ? "bg-green-100 dark:bg-green-900/50" : "bg-blue-100 dark:bg-blue-900/50"}`}
                       >
                         {task.completed ? (
                           <CheckCircle2 className="h-4 w-4 text-green-600" />
@@ -361,6 +359,5 @@ export default function DashboardPage() {
           </Card>
         </div>
       </div>
-    </div>
   )
 }

@@ -32,7 +32,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { NotificationsDropdown } from "@/components/notifications-dropdown"
-import { ThemeToggle } from "@/components/theme-toggle"
+
 
 const navItems = [
   {
@@ -229,8 +229,7 @@ export default function DashboardLayout({
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Theme Toggle */}
-              <ThemeToggle />
+
 
               {/* Notifications Bell */}
               <NotificationsDropdown />

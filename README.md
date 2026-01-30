@@ -168,7 +168,7 @@ Navigate to [http://localhost:3000](http://localhost:3000)
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
-│                        User Interface                            │
+│                        User Interface                           │
 │  ┌─────────────┐  ┌─────────────┐  ┌─────────────────────────┐  │
 │  │  Screening  │  │  Dashboard  │  │   Clinical Support AI   │  │
 │  │    Form     │  │   Pages     │  │       (Chat)            │  │
@@ -177,9 +177,9 @@ Navigate to [http://localhost:3000](http://localhost:3000)
           │                │                     │
           ▼                ▼                     ▼
 ┌─────────────────────────────────────────────────────────────────┐
-│                     Next.js API Routes                           │
+│                     Next.js API Routes                          │
 │  ┌───────────┐  ┌───────────┐  ┌───────────┐  ┌─────────────┐   │
-│  │/screening │  │  /tasks   │  │  /chat    │  │/notifications│   │
+│  │/screening │  │  /tasks   │  │  /chat    │  │/notifications│  │
 │  └─────┬─────┘  └─────┬─────┘  └─────┬─────┘  └──────┬──────┘   │
 └────────┼──────────────┼──────────────┼───────────────┼──────────┘
          │              │              │               │
