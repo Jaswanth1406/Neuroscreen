@@ -13,9 +13,26 @@ import base64
 import httpx
 from fastapi import FastAPI, HTTPException, UploadFile, File
 from dotenv import load_dotenv
+from pathlib import Path
 
-# Load environment variables
-load_dotenv()
+# Load environment variables - check multiple locations
+script_dir = Path(__file__).resolve().parent
+env_path = script_dir / '.env'
+env_local_path = script_dir.parent / '.env.local'
+root_env_path = script_dir.parent.parent / '.env'
+
+if env_local_path.exists():
+    print(f"Loading env from: {env_local_path}")
+    load_dotenv(env_local_path)
+elif env_path.exists():
+    print(f"Loading env from: {env_path}")
+    load_dotenv(env_path)
+elif root_env_path.exists():
+    print(f"Loading env from: {root_env_path}")
+    load_dotenv(root_env_path)
+else:
+    print("No .env file found, using system environment")
+    load_dotenv()  # Try default locations
 
 from train import load_model, predict, engineer_features, AQ10_QUESTIONS
 
