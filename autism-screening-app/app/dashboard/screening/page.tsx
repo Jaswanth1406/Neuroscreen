@@ -60,7 +60,7 @@ export default function ScreeningPage() {
 
     return (
         <div className="relative min-h-[calc(100vh-4rem)]">
-            {/* Background Image with Blur */}
+            {/* Background Image with Reduced Blur */}
             <div
                 className="absolute inset-0 z-0"
                 style={{
@@ -70,7 +70,7 @@ export default function ScreeningPage() {
                     backgroundAttachment: "fixed",
                 }}
             >
-                <div className="absolute inset-0 bg-white/80 dark:bg-gray-950/80 backdrop-blur-sm" />
+                <div className="absolute inset-0 bg-white/30 dark:bg-gray-950/30" />
             </div>
 
             <div className="space-y-6 max-w-4xl mx-auto relative z-10 py-6">
@@ -96,7 +96,7 @@ export default function ScreeningPage() {
                         <ResultsDashboard result={screeningResult} />
                     </div>
                 ) : (
-                    <Card className="border-0 shadow-md bg-white/70 dark:bg-gray-900/70 backdrop-blur-sm">
+                    <Card className="border border-white/40 shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
                         <CardHeader>
                             <CardTitle>AQ-10 Questionnaire</CardTitle>
                             <CardDescription>

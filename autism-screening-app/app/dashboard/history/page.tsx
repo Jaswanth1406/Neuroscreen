@@ -243,7 +243,7 @@ export default function HistoryPage() {
                 <Brain className="h-4 w-4" />
                 Start Screening
               </Button>
-            </a>
+            </Link>
           </CardContent>
         </Card>
       )}
