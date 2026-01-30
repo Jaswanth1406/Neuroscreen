@@ -16,12 +16,15 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { ScreeningResult } from "@/app/page"
+import { PDFExport } from "@/components/pdf-export"
+import { ShareResults } from "@/components/share-results"
 
 interface ResultsDashboardProps {
   result: ScreeningResult
+  userName?: string
 }
 
-export function ResultsDashboard({ result }: ResultsDashboardProps) {
+export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
   const riskConfig = {
     Low: {
       color: "text-green-600 dark:text-green-400",
@@ -50,13 +53,19 @@ export function ResultsDashboard({ result }: ResultsDashboardProps) {
   const RiskIcon = config.icon
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-6 max-w-5xl mx-auto" role="region" aria-label="Screening Results">
+      {/* Action Buttons */}
+      <div className="flex flex-wrap gap-3 justify-end">
+        <PDFExport result={result} userName={userName} />
+        <ShareResults result={result} />
+      </div>
+
       {/* Main Risk Assessment Card */}
       <Card className={cn("border-2", config.borderColor, config.bgColor)}>
         <CardHeader>
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className={cn("p-3 rounded-full", config.bgColor)}>
+              <div className={cn("p-3 rounded-full", config.bgColor)} aria-hidden="true">
                 <RiskIcon className={cn("h-8 w-8", config.color)} />
               </div>
               <div>
@@ -75,11 +84,14 @@ export function ResultsDashboard({ result }: ResultsDashboardProps) {
             <div>
               <div className="flex justify-between mb-2">
                 <span className="text-sm font-medium">Confidence Score</span>
-                <span className="text-sm font-bold">{(result.probability * 100).toFixed(1)}%</span>
+                <span className="text-sm font-bold" aria-label={`Confidence score: ${(result.probability * 100).toFixed(1)} percent`}>
+                  {(result.probability * 100).toFixed(1)}%
+                </span>
               </div>
               <Progress 
                 value={result.probability * 100} 
                 className="h-3"
+                aria-label="Confidence score progress"
               />
             </div>
           </div>

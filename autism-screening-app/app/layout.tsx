@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Roboto } from "next/font/google";
 import "./globals.css";
+import { ThemeProvider } from "@/components/theme-provider";
 
 const roboto = Roboto({
   weight: ["100", "300", "400", "500", "700", "900"],
@@ -9,8 +10,8 @@ const roboto = Roboto({
 });
 
 export const metadata: Metadata = {
-  title: "ASD Screening Assistant",
-  description: "AI-powered Autism Spectrum Disorder Screening Support Tool",
+  title: "NeuroScreen - AI Autism Screening",
+  description: "AI-powered Autism Spectrum Disorder Screening Support Tool with therapy games and progress tracking",
 };
 
 export default function RootLayout({
@@ -19,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         {/* Bootstrap for grid utilities and components */}
         <link
@@ -30,11 +31,13 @@ export default function RootLayout({
         />
       </head>
       <body className={`${roboto.variable} font-sans antialiased neuro-body`}>
-        {/* Main glassmorphism background wrapper */}
-        <div className="neuro-bg">
-          <div className="neuro-bg-overlay" />
-          <div className="neuro-bg-content">{children}</div>
-        </div>
+        <ThemeProvider defaultTheme="system" storageKey="neuroscreen-theme">
+          {/* Main glassmorphism background wrapper */}
+          <div className="neuro-bg">
+            <div className="neuro-bg-overlay" />
+            <div className="neuro-bg-content">{children}</div>
+          </div>
+        </ThemeProvider>
       </body>
     </html>
   );

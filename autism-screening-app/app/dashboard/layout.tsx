@@ -27,9 +27,12 @@ import {
   X,
   ChevronRight,
   Sparkles,
+  BarChart3,
+  Gamepad2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { NotificationsDropdown } from "@/components/notifications-dropdown"
+import { ThemeToggle } from "@/components/theme-toggle"
 
 const navItems = [
   {
@@ -49,6 +52,18 @@ const navItems = [
     href: "/dashboard/progress",
     icon: ListTodo,
     description: "Track therapy tasks",
+  },
+  {
+    title: "Analytics",
+    href: "/dashboard/analytics",
+    icon: BarChart3,
+    description: "View your progress",
+  },
+  {
+    title: "Therapy Games",
+    href: "/dashboard/therapy-games",
+    icon: Gamepad2,
+    description: "Interactive exercises",
   },
   {
     title: "Screening History",
@@ -214,6 +229,9 @@ export default function DashboardLayout({
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
               {/* Notifications Bell */}
               <NotificationsDropdown />
 
