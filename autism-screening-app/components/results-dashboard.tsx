@@ -11,7 +11,8 @@ import {
   Users,
   Eye,
   TrendingUp,
-  Lightbulb
+  Lightbulb,
+  Video
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import type { ScreeningResult } from "@/app/page"
@@ -147,6 +148,80 @@ export function ResultsDashboard({ result }: ResultsDashboardProps) {
           </CardContent>
         </Card>
       </div>
+
+      {/* Video Analysis Results */}
+      {result.video_analysis && (
+        <Card className="border-2 border-indigo-200 dark:border-indigo-800">
+          <CardHeader>
+            <div className="flex items-center gap-3">
+              <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-950">
+                <Video className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+              </div>
+              <div>
+                <CardTitle className="text-xl">Video Behavior Analysis</CardTitle>
+                <CardDescription>
+                  AI-powered analysis of behavioral indicators from video submission
+                </CardDescription>
+              </div>
+            </div>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="flex items-center gap-6">
+              <div className="flex-shrink-0">
+                <div className={cn(
+                  "w-24 h-24 rounded-full flex items-center justify-center text-3xl font-bold border-4",
+                  result.video_analysis.score >= 70 
+                    ? "bg-red-50 dark:bg-red-950/30 border-red-300 dark:border-red-700 text-red-600 dark:text-red-400"
+                    : result.video_analysis.score >= 40 
+                      ? "bg-amber-50 dark:bg-amber-950/30 border-amber-300 dark:border-amber-700 text-amber-600 dark:text-amber-400"
+                      : "bg-green-50 dark:bg-green-950/30 border-green-300 dark:border-green-700 text-green-600 dark:text-green-400"
+                )}>
+                  {result.video_analysis.score}
+                </div>
+                <p className="text-center text-xs text-muted-foreground mt-1">out of 100</p>
+              </div>
+              <div className="flex-1 space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span className="font-medium">Behavioral Indicator Score</span>
+                  <span className={cn(
+                    "font-semibold",
+                    result.video_analysis.score >= 70 
+                      ? "text-red-600 dark:text-red-400"
+                      : result.video_analysis.score >= 40 
+                        ? "text-amber-600 dark:text-amber-400"
+                        : "text-green-600 dark:text-green-400"
+                  )}>
+                    {result.video_analysis.score >= 70 ? "High" : result.video_analysis.score >= 40 ? "Moderate" : "Low"}
+                  </span>
+                </div>
+                <Progress 
+                  value={result.video_analysis.score} 
+                  className={cn(
+                    "h-3",
+                    result.video_analysis.score >= 70 
+                      ? "[&>div]:bg-red-500"
+                      : result.video_analysis.score >= 40 
+                        ? "[&>div]:bg-amber-500"
+                        : "[&>div]:bg-green-500"
+                  )}
+                />
+              </div>
+            </div>
+            
+            <Separator />
+            
+            <div>
+              <h4 className="font-semibold mb-2 flex items-center gap-2">
+                <Brain className="h-4 w-4 text-indigo-500" />
+                AI Analysis Summary
+              </h4>
+              <div className="p-4 rounded-lg bg-muted/50 text-sm leading-relaxed">
+                {result.video_analysis.reason}
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Contributing Factors */}
       {result.contributing_factors && result.contributing_factors.length > 0 && (

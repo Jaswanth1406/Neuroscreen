@@ -161,6 +161,7 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
         result: aq10Total
       }
       
+      // Make prediction request
       const response = await fetch("http://localhost:8000/predict", {
         method: "POST",
         headers: {
@@ -174,10 +175,61 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
       }
       
       const result = await response.json()
-      onComplete(result)
+      
+      // If video was uploaded, analyze it with Gemini
+      let videoAnalysisResult = null
+      if (videoFile) {
+        try {
+          console.log("Uploading video for analysis...", videoFile.name)
+          const formData = new FormData()
+          formData.append("file", videoFile)
+          
+          const videoResponse = await fetch("http://localhost:8000/analyze-video", {
+            method: "POST",
+            body: formData,
+          })
+          
+          if (videoResponse.ok) {
+            videoAnalysisResult = await videoResponse.json()
+            console.log("Video analysis result:", videoAnalysisResult)
+          } else {
+            console.error("Video analysis failed with status:", videoResponse.status)
+          }
+        } catch (videoError) {
+          console.error("Video analysis failed:", videoError)
+          // Continue without video analysis
+        }
+      }
+      
+      // Combine results
+      onComplete({
+        ...result,
+        video_analysis: videoAnalysisResult
+      })
       
     } catch (error) {
       console.error("Error:", error)
+      
+      // Try video analysis even if prediction failed
+      let videoAnalysisResult = null
+      if (videoFile) {
+        try {
+          const formData = new FormData()
+          formData.append("file", videoFile)
+          
+          const videoResponse = await fetch("http://localhost:8000/analyze-video", {
+            method: "POST",
+            body: formData,
+          })
+          
+          if (videoResponse.ok) {
+            videoAnalysisResult = await videoResponse.json()
+          }
+        } catch (videoError) {
+          console.error("Video analysis failed:", videoError)
+        }
+      }
+      
       // Use mock result for demo if API fails
       const mockResult = {
         prediction: Object.values(answers).reduce((s, v) => s + v, 0) >= 6 ? 1 : 0,
@@ -199,7 +251,8 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
         recommendations: [
           "This is a demo mode result. Connect to the ML backend for accurate predictions.",
           "Please consult with a healthcare professional for proper evaluation."
-        ]
+        ],
+        video_analysis: videoAnalysisResult
       }
       onComplete(mockResult)
     } finally {

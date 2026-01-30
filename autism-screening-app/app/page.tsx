@@ -20,7 +20,6 @@ import {
   Shield,
   Clock,
   HeartHandshake,
-  ChevronRight,
   CheckCircle2,
   Zap,
   Users,
@@ -51,6 +50,10 @@ export interface ScreeningResult {
   }>
   recommendations?: string[]
   evidence_summary?: string
+  video_analysis?: {
+    score: number
+    reason: string
+  }
 }
 
 export default function Home() {
@@ -58,6 +61,7 @@ export default function Home() {
   const [showResults, setShowResults] = useState(false)
   const { data: session, isPending } = useSession()
   const screeningRef = useRef<HTMLDivElement>(null)
+  const router = useRouter()
 
   const handleScreeningComplete = async (result: ScreeningResult) => {
     setScreeningResult(result)
@@ -407,10 +411,12 @@ export default function Home() {
                   </div>
                   Your Results
                 </h2>
-                <Button variant="outline" onClick={() => setShowResults(false)} className="gap-2">
-                  <ClipboardList className="h-4 w-4" />
-                  New Screening
-                </Button>
+                <a href="/screening">
+                  <Button variant="outline" className="gap-2">
+                    <ClipboardList className="h-4 w-4" />
+                    New Screening
+                  </Button>
+                </a>
               </div>
               <ResultsDashboard result={screeningResult} />
             </div>
