@@ -9,6 +9,13 @@ from pydantic import BaseModel, Field
 from typing import Optional, List
 import os
 import json
+import base64
+import httpx
+from fastapi import FastAPI, HTTPException, UploadFile, File
+from dotenv import load_dotenv
+
+# Load environment variables
+load_dotenv()
 
 from train import load_model, predict, engineer_features, AQ10_QUESTIONS
 
@@ -257,6 +264,121 @@ async def batch_prediction(inputs: List[ScreeningInput]):
             })
     
     return {"results": results}
+
+
+@app.post("/analyze-video")
+async def analyze_video(file: UploadFile = File(...)):
+    """
+    Analyze a video file for signs of autism using Gemini 1.5 Flash via AI Pipe.
+    """
+    api_key = os.getenv("AIPIPE_API_KEY")
+    if not api_key:
+         raise HTTPException(status_code=500, detail="AIPIPE_API_KEY not configured in environment")
+
+    # Limit file size (optional safety check, e.g. 25MB)
+    # content_length = request.headers.get('content-length')
+    
+    try:
+        # Read file content
+        content = await file.read()
+        
+        # Encode to base64
+        video_b64 = base64.b64encode(content).decode("utf-8")
+        
+        # Determine mime type
+        mime_type = file.content_type or "video/mp4"
+        
+        # Get model from env or default to gemini-1.5-flash
+        model_name = os.getenv("AI_MODEL", "gemini-1.5-flash")
+
+        # Prepare request to AI Pipe (serving Gemini)
+        url = f"https://aipipe.org/geminiv1beta/models/{model_name}:generateContent"
+        
+        headers = {
+            "Content-Type": "application/json",
+            "Authorization": f"Bearer {api_key}"
+        }
+        
+        prompt = """
+        You are an expert clinical autism specialist. 
+        Analyze the behavior, facial expressions, eye contact, and body language of the person in this video.
+        
+        Provide ONLY the following two outputs:
+        1. **Score**: A risk score from 1-100 (1 = low risk, 100 = high indications).
+        2. **Reason**: A concise explanation of why this score was assigned based on specific visual evidence.
+        
+        Format your response exactly like this:
+        Score: [Number]
+        Reason: [Text]
+        
+        If the video is unclear or no person is visible, return:
+        Score: 0
+        Reason: Unable to analyze video.
+        """
+
+        payload = {
+            "contents": [{
+                "parts": [
+                    {"text": prompt},
+                    {
+                        "inline_data": {
+                            "mime_type": mime_type,
+                            "data": video_b64
+                        }
+                    }
+                ]
+            }]
+        }
+
+        async with httpx.AsyncClient() as client:
+            # Video processing might take a bit of time
+            response = await client.post(url, headers=headers, json=payload, timeout=120.0)
+            
+            if response.status_code != 200:
+                print(f"AI Pipe Error: {response.text}")
+                raise HTTPException(status_code=response.status_code, detail=f"AI Provider Error: {response.text}")
+                
+            result = response.json()
+            
+            # Extract text from Gemini response structure
+            try:
+                analysis_text = result["candidates"][0]["content"]["parts"][0]["text"]
+                
+                # Simple parsing to extract Score and Reason
+                score = 0
+                reason = "Unable to parse analysis."
+                
+                lines = analysis_text.strip().split('\n')
+                for line in lines:
+                    if line.lower().startswith("score:"):
+                        try:
+                            score_text = line.split(":", 1)[1].strip()
+                            # Handle cases like "1 (Low Risk)" by taking just the number
+                            score = int(''.join(filter(str.isdigit, score_text.split()[0]))) 
+                        except ValueError:
+                            pass
+                    elif line.lower().startswith("reason:"):
+                        reason = line.split(":", 1)[1].strip()
+                
+                # If reason spans multiple lines (simple fallback)
+                if reason == "Unable to parse analysis." and len(lines) > 1:
+                     reason = analysis_text.replace("Score:", "").strip()
+
+                return {
+                    "score": score,
+                    "reason": reason
+                }
+            except (KeyError, IndexError, TypeError):
+                print(f"Unexpected response structure: {result}")
+                return {
+                    "status": "partial_error",
+                    "analysis": "Analysis completed but response format was unexpected.",
+                    "raw": result
+                }
+                
+    except Exception as e:
+        print(f"Video analysis failed: {str(e)}")
+        raise HTTPException(status_code=500, detail=f"Error processing video: {str(e)}")
 
 
 if __name__ == "__main__":

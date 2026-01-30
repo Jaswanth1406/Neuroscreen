@@ -93,3 +93,5 @@ coverage/
 *.pem
 *.key
 *.crt
+
+models/llm_cache
