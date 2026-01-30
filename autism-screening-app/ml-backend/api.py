@@ -70,6 +70,15 @@ async def startup_event():
     else:
         print("Warning: Model directory not found. Run train.py first.")
 
+# Load Knowledge Base
+try:
+    kb_path = script_dir.parent.parent / "KNOWLEDGE_BASE.txt"
+    with open(kb_path, "r", encoding="utf-8") as f:
+        knowledge_base_content = f.read()
+    print(f"Loaded Knowledge Base: {len(knowledge_base_content)} chars")
+except Exception as e:
+    print(f"Warning: Could not load KNOWLEDGE_BASE.txt: {e}")
+    knowledge_base_content = "Analyze based on standard clinical autism criteria."
 
 class ScreeningInput(BaseModel):
     """Input schema for ASD screening questionnaire"""
