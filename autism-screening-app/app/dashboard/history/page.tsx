@@ -238,12 +238,12 @@ export default function HistoryPage() {
             <p className="text-muted-foreground mb-6">
               Complete your first AQ-10 screening assessment to see results here
             </p>
-            <Link href="/">
+            <a href="/screening">
               <Button className="gap-2">
                 <Brain className="h-4 w-4" />
                 Start Screening
               </Button>
-            </Link>
+            </a>
           </CardContent>
         </Card>
       )}

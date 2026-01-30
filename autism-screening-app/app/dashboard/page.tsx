@@ -96,12 +96,12 @@ export default function DashboardPage() {
             Track your screening progress, complete therapy tasks, and chat with our AI clinical support assistant for personalized guidance.
           </p>
           <div className="flex flex-wrap gap-3 mt-6">
-            <Link href="/">
+            <a href="/screening">
               <Button variant="secondary" className="gap-2 shadow-lg">
                 <ClipboardCheck className="h-4 w-4" />
                 Start Screening
               </Button>
-            </Link>
+            </a>
             <Link href="/dashboard/clinical-support">
               <Button variant="outline" className="gap-2 bg-white/10 border-white/30 text-white hover:bg-white/20">
                 <MessageSquareHeart className="h-4 w-4" />
