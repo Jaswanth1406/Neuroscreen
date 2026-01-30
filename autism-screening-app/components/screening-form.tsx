@@ -548,7 +548,7 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
 
           <div className="grid gap-6 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="age">Age (years)</Label>
+              <Label htmlFor="age">Age (years)</Label><br />
               <Input
                 id="age"
                 type="number"
@@ -557,6 +557,8 @@ export function ScreeningForm({ onComplete }: ScreeningFormProps) {
                 onChange={(e) => setDemographics(prev => ({ ...prev, age: e.target.value }))}
                 min="1"
                 max="100"
+                className="w-64"
+
               />
             </div>
 
