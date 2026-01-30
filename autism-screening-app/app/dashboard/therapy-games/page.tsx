@@ -60,8 +60,8 @@ const BREATHING_PATTERNS = [
   { name: "Deep Calm", inhale: 5, hold: 5, exhale: 5, description: "Deep relaxation" },
 ]
 
-// Social scenarios for practice
-const SOCIAL_SCENARIOS = [
+// Default fallback social scenarios
+const DEFAULT_SCENARIOS = [
   {
     situation: "Someone at school says 'Hi!' to you in the hallway.",
     options: [
@@ -109,6 +109,16 @@ const SOCIAL_SCENARIOS = [
   },
 ]
 
+// Scenario type definition
+type SocialScenario = {
+  situation: string
+  options: {
+    text: string
+    correct: boolean
+    feedback: string
+  }[]
+}
+
 interface GameStats {
   emotionScore: number
   emotionStreak: number
@@ -119,6 +129,32 @@ interface GameStats {
   socialTotal: number
   totalPoints: number
   achievements: string[]
+}
+
+// Dynamic achievement type
+interface DynamicAchievement {
+  id: string
+  name: string
+  description: string
+  icon: string
+  requirement: {
+    type: "emotion_score" | "emotion_streak" | "breathing_sessions" | "breathing_minutes" | "social_correct" | "social_rate" | "total_points"
+    value: number
+  }
+}
+
+// Icon mapping for dynamic achievements
+const ICON_MAP: Record<string, any> = {
+  Smile,
+  Flame,
+  Wind,
+  Users,
+  Star,
+  Trophy,
+  Heart,
+  Brain,
+  Target,
+  Sparkles,
 }
 
 const DEFAULT_STATS: GameStats = {
@@ -137,6 +173,8 @@ export default function TherapyGamesPage() {
   const [stats, setStats] = useState<GameStats>(DEFAULT_STATS)
   const [activeGame, setActiveGame] = useState<string | null>(null)
   const [showAchievement, setShowAchievement] = useState<string | null>(null)
+  const [dynamicAchievements, setDynamicAchievements] = useState<DynamicAchievement[]>([])
+  const [isLoadingAchievements, setIsLoadingAchievements] = useState(false)
 
   // Load stats from localStorage
   useEffect(() => {
@@ -144,18 +182,80 @@ export default function TherapyGamesPage() {
     if (saved) {
       setStats(JSON.parse(saved))
     }
+    // Load dynamic achievements
+    const savedAchievements = localStorage.getItem("dynamic-achievements")
+    if (savedAchievements) {
+      setDynamicAchievements(JSON.parse(savedAchievements))
+    }
+  }, [])
+
+  // Fetch new achievements when user reaches milestones
+  const fetchNewAchievements = useCallback(async (currentStats: GameStats) => {
+    // Only fetch if user has some progress
+    if (currentStats.totalPoints < 50) return
+    
+    // Check if we should generate new achievements (every 100 points or when all are unlocked)
+    const unlockedCount = currentStats.achievements.length
+    const totalAvailable = 4 + dynamicAchievements.length // 4 static + dynamic
+    
+    // Generate new ones if user has unlocked most achievements
+    if (unlockedCount >= totalAvailable - 1 && !isLoadingAchievements) {
+      setIsLoadingAchievements(true)
+      try {
+        const response = await fetch("/api/generate-achievements", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ 
+            stats: currentStats, 
+            unlockedAchievements: currentStats.achievements 
+          }),
+        })
+        
+        const data = await response.json()
+        
+        if (data.success && data.achievements) {
+          const newAchievements = [...dynamicAchievements, ...data.achievements]
+          setDynamicAchievements(newAchievements)
+          localStorage.setItem("dynamic-achievements", JSON.stringify(newAchievements))
+        }
+      } catch (error) {
+        console.error("Failed to fetch new achievements:", error)
+      } finally {
+        setIsLoadingAchievements(false)
+      }
+    }
+  }, [dynamicAchievements, isLoadingAchievements])
+
+  // Check if a dynamic achievement is unlocked
+  const isDynamicAchievementUnlocked = useCallback((achievement: DynamicAchievement, currentStats: GameStats): boolean => {
+    const { type, value } = achievement.requirement
+    switch (type) {
+      case "emotion_score": return currentStats.emotionScore >= value
+      case "emotion_streak": return currentStats.emotionBest >= value
+      case "breathing_sessions": return currentStats.breathingSessions >= value
+      case "breathing_minutes": return currentStats.breathingMinutes >= value
+      case "social_correct": return currentStats.socialCorrect >= value
+      case "social_rate": 
+        return currentStats.socialTotal > 0 && 
+          (currentStats.socialCorrect / currentStats.socialTotal) * 100 >= value
+      case "total_points": return currentStats.totalPoints >= value
+      default: return false
+    }
   }, [])
 
   // Save stats to localStorage
   const saveStats = useCallback((newStats: GameStats) => {
     setStats(newStats)
     localStorage.setItem("therapy-game-stats", JSON.stringify(newStats))
-  }, [])
+    // Check if we should fetch new achievements
+    fetchNewAchievements(newStats)
+  }, [fetchNewAchievements])
 
   // Check and award achievements
   const checkAchievements = useCallback((newStats: GameStats) => {
     const newAchievements: string[] = [...newStats.achievements]
     
+    // Static achievements
     if (newStats.emotionScore >= 10 && !newAchievements.includes("emotion_10")) {
       newAchievements.push("emotion_10")
       setShowAchievement("Emotion Expert: 10 correct answers!")
@@ -173,8 +273,16 @@ export default function TherapyGamesPage() {
       setShowAchievement("Social Star: 5 correct responses!")
     }
     
+    // Check dynamic achievements
+    for (const achievement of dynamicAchievements) {
+      if (!newAchievements.includes(achievement.id) && isDynamicAchievementUnlocked(achievement, newStats)) {
+        newAchievements.push(achievement.id)
+        setShowAchievement(`${achievement.name}: ${achievement.description}`)
+      }
+    }
+    
     return { ...newStats, achievements: newAchievements }
-  }, [])
+  }, [dynamicAchievements, isDynamicAchievementUnlocked])
 
   return (
     <div className="space-y-8" role="main" aria-label="Therapy Games">
@@ -366,7 +474,45 @@ export default function TherapyGamesPage() {
               icon={Users}
               unlocked={stats.achievements.includes("social_5")}
             />
+            
+            {/* Dynamic achievements */}
+            {dynamicAchievements.map((achievement) => (
+              <AchievementBadge 
+                key={achievement.id}
+                name={achievement.name}
+                description={achievement.description}
+                icon={ICON_MAP[achievement.icon] || Star}
+                unlocked={stats.achievements.includes(achievement.id)}
+              />
+            ))}
+            
+            {/* Loading indicator for new achievements */}
+            {isLoadingAchievements && (
+              <div className="p-4 rounded-xl border-2 border-dashed border-muted text-center animate-pulse">
+                <div className="w-12 h-12 mx-auto rounded-full bg-muted flex items-center justify-center mb-2">
+                  <Sparkles className="h-6 w-6 text-muted-foreground animate-spin" />
+                </div>
+                <p className="font-semibold text-sm text-muted-foreground">Loading...</p>
+                <p className="text-xs text-muted-foreground">New challenges</p>
+              </div>
+            )}
           </div>
+          
+          {/* Generate new achievements button */}
+          {stats.totalPoints >= 50 && (
+            <div className="mt-4 pt-4 border-t">
+              <Button 
+                variant="outline" 
+                size="sm"
+                className="w-full gap-2"
+                onClick={() => fetchNewAchievements(stats)}
+                disabled={isLoadingAchievements}
+              >
+                <Sparkles className="h-4 w-4" />
+                {isLoadingAchievements ? "Generating..." : "Generate New Challenges"}
+              </Button>
+            </div>
+          )}
         </CardContent>
       </Card>
 
@@ -667,8 +813,8 @@ function BreathingDialog({
 
   return (
     <Dialog open={open} onOpenChange={() => { handleStop(); onClose(); }}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Wind className="h-5 w-5 text-cyan-500" />
             Breathing Exercise
@@ -678,7 +824,7 @@ function BreathingDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
+        <div className="space-y-4 py-2 overflow-y-auto flex-1 min-h-0">
           {/* Pattern selector */}
           {!isActive && (
             <div className="grid grid-cols-2 gap-2">
@@ -686,10 +832,10 @@ function BreathingDialog({
                 <Button
                   key={pattern.name}
                   variant={selectedPattern.name === pattern.name ? "default" : "outline"}
-                  className="h-auto py-3 flex-col"
+                  className="h-auto py-2 flex-col"
                   onClick={() => setSelectedPattern(pattern)}
                 >
-                  <span className="font-medium">{pattern.name}</span>
+                  <span className="font-medium text-sm">{pattern.name}</span>
                   <span className="text-xs opacity-70">{pattern.description}</span>
                 </Button>
               ))}
@@ -697,9 +843,9 @@ function BreathingDialog({
           )}
 
           {/* Breathing visualization */}
-          <div className="flex flex-col items-center justify-center py-8">
+          <div className="flex flex-col items-center justify-center py-4">
             <motion.div
-              className="w-32 h-32 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white shadow-lg"
+              className="w-28 h-28 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white shadow-lg"
               animate={{ scale: isActive ? getCircleScale() : 1 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
@@ -709,10 +855,10 @@ function BreathingDialog({
             </motion.div>
 
             {isActive && (
-              <div className="mt-6 text-center">
-                <p className="text-4xl font-bold text-primary">{timer}s</p>
-                <p className="text-muted-foreground capitalize">{phase}</p>
-                <div className="mt-4 w-48">
+              <div className="mt-4 text-center">
+                <p className="text-3xl font-bold text-primary">{timer}s</p>
+                <p className="text-muted-foreground capitalize text-sm">{phase}</p>
+                <div className="mt-3 w-40">
                   <Progress value={getPhaseProgress()} className="h-2" />
                 </div>
               </div>
@@ -722,12 +868,12 @@ function BreathingDialog({
           {/* Stats */}
           <div className="flex items-center justify-center gap-6 text-center">
             <div>
-              <p className="text-2xl font-bold">{cycles}</p>
-              <p className="text-sm text-muted-foreground">Cycles</p>
+              <p className="text-xl font-bold">{cycles}</p>
+              <p className="text-xs text-muted-foreground">Cycles</p>
             </div>
             <div>
-              <p className="text-2xl font-bold">{Math.floor(totalSeconds / 60)}:{(totalSeconds % 60).toString().padStart(2, '0')}</p>
-              <p className="text-sm text-muted-foreground">Duration</p>
+              <p className="text-xl font-bold">{Math.floor(totalSeconds / 60)}:{(totalSeconds % 60).toString().padStart(2, '0')}</p>
+              <p className="text-xs text-muted-foreground">Duration</p>
             </div>
           </div>
 
@@ -763,17 +909,61 @@ function SocialScenariosDialog({
   stats: GameStats
   onUpdateStats: (stats: GameStats) => void
 }) {
+  const [scenarios, setScenarios] = useState<SocialScenario[]>(DEFAULT_SCENARIOS)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [selectedOption, setSelectedOption] = useState<number | null>(null)
   const [showFeedback, setShowFeedback] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [difficulty, setDifficulty] = useState<"easy" | "medium" | "hard">("medium")
+  const [ageGroup, setAgeGroup] = useState<"child" | "teen" | "adult">("child")
+  const [showSettings, setShowSettings] = useState(true)
+  const [error, setError] = useState<string | null>(null)
 
-  const currentScenario = SOCIAL_SCENARIOS[currentIndex]
+  const currentScenario = scenarios[currentIndex]
+
+  // Fetch new scenarios from LLM
+  const generateNewScenarios = async () => {
+    setIsLoading(true)
+    setError(null)
+    
+    try {
+      const response = await fetch("/api/generate-scenarios", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ difficulty, ageGroup }),
+      })
+      
+      const data = await response.json()
+      
+      if (data.success && data.scenarios) {
+        setScenarios(data.scenarios)
+        setShowSettings(false)
+        setCurrentIndex(0)
+        setSelectedOption(null)
+        setShowFeedback(false)
+      } else {
+        setError(data.error || "Failed to generate scenarios")
+        // Fall back to default scenarios
+        setScenarios(DEFAULT_SCENARIOS)
+        setShowSettings(false)
+      }
+    } catch (err) {
+      console.error("Error fetching scenarios:", err)
+      setError("Network error. Using default scenarios.")
+      setScenarios(DEFAULT_SCENARIOS)
+      setShowSettings(false)
+    } finally {
+      setIsLoading(false)
+    }
+  }
 
   useEffect(() => {
     if (open) {
+      setShowSettings(true)
       setCurrentIndex(0)
       setSelectedOption(null)
       setShowFeedback(false)
+      setError(null)
     }
   }, [open])
 
@@ -792,7 +982,7 @@ function SocialScenariosDialog({
   }
 
   const handleNext = () => {
-    if (currentIndex < SOCIAL_SCENARIOS.length - 1) {
+    if (currentIndex < scenarios.length - 1) {
       setCurrentIndex(currentIndex + 1)
       setSelectedOption(null)
       setShowFeedback(false)
@@ -801,87 +991,193 @@ function SocialScenariosDialog({
     }
   }
 
+  const handlePlayAgain = () => {
+    setShowSettings(true)
+    setCurrentIndex(0)
+    setSelectedOption(null)
+    setShowFeedback(false)
+  }
+
   return (
     <Dialog open={open} onOpenChange={() => onClose()}>
-      <DialogContent className="sm:max-w-lg">
-        <DialogHeader>
+      <DialogContent className="sm:max-w-lg max-h-[90vh] flex flex-col">
+        <DialogHeader className="flex-shrink-0">
           <DialogTitle className="flex items-center gap-2">
             <Users className="h-5 w-5 text-purple-500" />
             Social Scenarios
           </DialogTitle>
           <DialogDescription>
-            Scenario {currentIndex + 1} of {SOCIAL_SCENARIOS.length}
+            {showSettings 
+              ? "Choose your settings and generate new scenarios"
+              : `Scenario ${currentIndex + 1} of ${scenarios.length}`
+            }
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-6 py-4">
-          {/* Progress */}
-          <Progress value={((currentIndex + 1) / SOCIAL_SCENARIOS.length) * 100} className="h-2" />
-
-          {/* Scenario */}
-          <Card className="bg-muted/50">
-            <CardContent className="p-4">
-              <p className="text-lg font-medium">{currentScenario.situation}</p>
-            </CardContent>
-          </Card>
-
-          {/* Options */}
-          <div className="space-y-2">
-            {currentScenario.options.map((option, index) => (
-              <Button
-                key={index}
-                variant="outline"
-                className={cn(
-                  "w-full h-auto py-3 px-4 justify-start text-left whitespace-normal",
-                  showFeedback && option.correct && "bg-green-100 border-green-500 dark:bg-green-900/30",
-                  showFeedback && selectedOption === index && !option.correct && "bg-red-100 border-red-500 dark:bg-red-900/30"
-                )}
-                onClick={() => !showFeedback && handleSelect(index)}
-                disabled={showFeedback}
-              >
-                {option.text}
-              </Button>
-            ))}
-          </div>
-
-          {/* Feedback */}
-          {showFeedback && selectedOption !== null && (
-            <motion.div
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={cn(
-                "p-4 rounded-lg",
-                currentScenario.options[selectedOption].correct 
-                  ? "bg-green-100 dark:bg-green-900/30"
-                  : "bg-amber-100 dark:bg-amber-900/30"
+        <div className="space-y-4 py-2 overflow-y-auto flex-1 min-h-0">
+          {/* Settings screen */}
+          {showSettings ? (
+            <div className="space-y-4">
+              {error && (
+                <div className="p-3 rounded-lg bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-sm">
+                  {error}
+                </div>
               )}
-            >
-              <p className="font-medium flex items-center gap-2">
-                {currentScenario.options[selectedOption].correct ? (
-                  <CheckCircle2 className="h-5 w-5 text-green-600" />
-                ) : (
-                  <Sparkles className="h-5 w-5 text-amber-600" />
-                )}
-                {currentScenario.options[selectedOption].feedback}
-              </p>
-            </motion.div>
-          )}
+              
+              {/* Difficulty selector */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Difficulty Level</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["easy", "medium", "hard"] as const).map((level) => (
+                    <Button
+                      key={level}
+                      variant={difficulty === level ? "default" : "outline"}
+                      className="capitalize"
+                      onClick={() => setDifficulty(level)}
+                    >
+                      {level}
+                    </Button>
+                  ))}
+                </div>
+                <p className="text-xs text-muted-foreground">
+                  {difficulty === "easy" && "Simple everyday situations like greetings and basic manners"}
+                  {difficulty === "medium" && "Common social interactions at school, home, or with friends"}
+                  {difficulty === "hard" && "Complex situations involving emotions, conflicts, or group dynamics"}
+                </p>
+              </div>
 
-          {/* Next button */}
-          {showFeedback && (
-            <Button onClick={handleNext} className="w-full gap-2">
-              {currentIndex < SOCIAL_SCENARIOS.length - 1 ? (
-                <>
-                  Next Scenario
-                  <ArrowRight className="h-4 w-4" />
-                </>
-              ) : (
-                <>
-                  <Trophy className="h-4 w-4" />
-                  Complete!
-                </>
+              {/* Age group selector */}
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Age Group</label>
+                <div className="grid grid-cols-3 gap-2">
+                  {(["child", "teen", "adult"] as const).map((age) => (
+                    <Button
+                      key={age}
+                      variant={ageGroup === age ? "default" : "outline"}
+                      className="capitalize"
+                      onClick={() => setAgeGroup(age)}
+                    >
+                      {age === "child" ? "Child (5-12)" : age === "teen" ? "Teen (13-18)" : "Adult"}
+                    </Button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Generate buttons */}
+              <div className="flex flex-col gap-2">
+                <Button 
+                  onClick={generateNewScenarios} 
+                  disabled={isLoading}
+                  className="gap-2"
+                >
+                  {isLoading ? (
+                    <>
+                      <motion.div
+                        animate={{ rotate: 360 }}
+                        transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                      >
+                        <Sparkles className="h-4 w-4" />
+                      </motion.div>
+                      Generating with AI...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="h-4 w-4" />
+                      Generate New Scenarios
+                    </>
+                  )}
+                </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => {
+                    setScenarios(DEFAULT_SCENARIOS)
+                    setShowSettings(false)
+                  }}
+                  disabled={isLoading}
+                >
+                  Use Default Scenarios
+                </Button>
+              </div>
+            </div>
+          ) : (
+            <div className="space-y-3">
+              {/* Progress */}
+              <Progress value={((currentIndex + 1) / scenarios.length) * 100} className="h-2" />
+
+              {/* Scenario */}
+              <Card className="bg-muted/50">
+                <CardContent className="p-3">
+                  <p className="text-base font-medium">{currentScenario.situation}</p>
+                </CardContent>
+              </Card>
+
+              {/* Options */}
+              <div className="space-y-2">
+                {currentScenario.options.map((option, index) => (
+                  <Button
+                    key={index}
+                    variant="outline"
+                    className={cn(
+                      "w-full h-auto py-2 px-3 justify-start text-left whitespace-normal text-sm",
+                      showFeedback && option.correct && "bg-green-100 border-green-500 dark:bg-green-900/30",
+                      showFeedback && selectedOption === index && !option.correct && "bg-red-100 border-red-500 dark:bg-red-900/30"
+                    )}
+                    onClick={() => !showFeedback && handleSelect(index)}
+                    disabled={showFeedback}
+                  >
+                    {option.text}
+                  </Button>
+                ))}
+              </div>
+
+              {/* Feedback */}
+              {showFeedback && selectedOption !== null && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className={cn(
+                    "p-3 rounded-lg text-sm",
+                    currentScenario.options[selectedOption].correct 
+                      ? "bg-green-100 dark:bg-green-900/30"
+                      : "bg-amber-100 dark:bg-amber-900/30"
+                  )}
+                >
+                  <p className="font-medium flex items-start gap-2">
+                    {currentScenario.options[selectedOption].correct ? (
+                      <CheckCircle2 className="h-4 w-4 text-green-600 flex-shrink-0 mt-0.5" />
+                    ) : (
+                      <Sparkles className="h-4 w-4 text-amber-600 flex-shrink-0 mt-0.5" />
+                    )}
+                    {currentScenario.options[selectedOption].feedback}
+                  </p>
+                </motion.div>
               )}
-            </Button>
+
+              {/* Next/Complete buttons */}
+              {showFeedback && (
+                <div className="flex gap-2 pt-2">
+                  <Button onClick={handleNext} className="flex-1 gap-2">
+                    {currentIndex < scenarios.length - 1 ? (
+                      <>
+                        Next Scenario
+                        <ArrowRight className="h-4 w-4" />
+                      </>
+                    ) : (
+                      <>
+                        <Trophy className="h-4 w-4" />
+                        Complete!
+                      </>
+                    )}
+                  </Button>
+                  {currentIndex === scenarios.length - 1 && (
+                    <Button variant="outline" onClick={handlePlayAgain} className="gap-2">
+                      <RotateCcw className="h-4 w-4" />
+                      Play Again
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
           )}
         </div>
       </DialogContent>
