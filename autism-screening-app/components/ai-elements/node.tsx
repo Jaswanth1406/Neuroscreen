@@ -36,7 +36,7 @@ export type NodeHeaderProps = ComponentProps<typeof CardHeader>;
 
 export const NodeHeader = ({ className, ...props }: NodeHeaderProps) => (
   <CardHeader
-    className={cn("gap-0.5 rounded-t-md border-b bg-secondary p-3!", className)}
+    className={cn("gap-0.5 rounded-t-md border-b bg-white-custom p-3!", className)}
     {...props}
   />
 );

@@ -111,7 +111,7 @@ export default function HistoryPage() {
             View your past AQ-10 screening assessments
           </p>
         </div>
-        <Link href="/">
+        <Link href="/dashboard/screening" className="!no-underline ">
           <Button className="gap-2">
             <Brain className="h-4 w-4" />
             New Screening
@@ -219,7 +219,7 @@ export default function HistoryPage() {
                 </div>
 
                 <div className="flex justify-end mt-6">
-                  <Link href="/dashboard/clinical-support">
+                  <Link href="/dashboard/clinical-support" className="!no-underline ">
                     <Button variant="outline" size="sm" className="gap-2">
                       Get Support
                       <ArrowRight className="h-3 w-3" />
@@ -238,7 +238,7 @@ export default function HistoryPage() {
             <p className="text-muted-foreground mb-6">
               Complete your first AQ-10 screening assessment to see results here
             </p>
-            <Link href="/">
+            <Link href="/dashboard/screening" className="!no-underline ">
               <Button className="gap-2">
                 <Brain className="h-4 w-4" />
                 Start Screening

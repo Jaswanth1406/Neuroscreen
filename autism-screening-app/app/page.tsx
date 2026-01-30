@@ -1,19 +1,20 @@
-"use client"
+"use client";
 
 import { useState, useRef } from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ScreeningForm } from "@/components/screening-form"
 import { ResultsDashboard } from "@/components/results-dashboard"
 import { useSession, signOut } from "@/lib/auth-client"
-import { 
-  Brain, 
-  ClipboardList, 
-  BarChart3, 
-  LogIn, 
-  LayoutDashboard, 
+import {
+  Brain,
+  ClipboardList,
+  BarChart3,
+  LogIn,
+  LayoutDashboard,
   LogOut,
   Sparkles,
   Shield,
@@ -60,7 +61,7 @@ export default function Home() {
 
   const handleScreeningComplete = async (result: ScreeningResult) => {
     setScreeningResult(result)
-    
+
     // Save to database if user is logged in
     if (session) {
       try {
@@ -82,7 +83,7 @@ export default function Home() {
         console.error("Failed to save screening result:", error)
       }
     }
-    
+
     setShowResults(true)
   }
 
@@ -95,12 +96,12 @@ export default function Home() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <main className="min-h-screen bg-transparent">
       {/* Header */}
       <header className="border-b border-white/20 bg-white/70 dark:bg-gray-900/70 backdrop-blur-xl sticky top-0 z-50">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <Link href="/" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
+            <Link href="/" className="flex head1!no-underline text-decoration-none items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="relative">
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl blur-lg opacity-50" />
                 <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
@@ -116,14 +117,14 @@ export default function Home() {
                 </p>
               </div>
             </Link>
-            
+
             {/* Auth Buttons */}
             <div className="flex items-center gap-3">
               {isPending ? (
                 <div className="h-10 w-24 bg-slate-200 dark:bg-slate-700 rounded-lg animate-pulse" />
               ) : session ? (
                 <>
-                  <Link href="/dashboard">
+                  <Link href="/dashboard" className="!no-underline ">
                     <Button variant="outline" className="gap-2 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950">
                       <LayoutDashboard className="h-4 w-4" />
                       <span className="hidden sm:inline">Dashboard</span>
@@ -147,13 +148,13 @@ export default function Home() {
                       </div>
                       <DropdownMenuSeparator />
                       <DropdownMenuItem asChild>
-                        <Link href="/dashboard" className="cursor-pointer">
+                        <Link href="/dashboard" className="cursor-pointer!no-underline ">
                           <LayoutDashboard className="mr-2 h-4 w-4" />
                           Dashboard
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
-                      <DropdownMenuItem 
+                      <DropdownMenuItem
                         className="text-red-500 cursor-pointer"
                         onClick={handleSignOut}
                       >
@@ -164,7 +165,7 @@ export default function Home() {
                   </DropdownMenu>
                 </>
               ) : (
-                <Link href="/auth">
+                <Link href="/auth" className="!no-underline ">
                   <Button className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg shadow-blue-500/25">
                     <LogIn className="h-4 w-4" />
                     <span className="hidden sm:inline">Sign In</span>
@@ -178,51 +179,129 @@ export default function Home() {
 
       {/* Main Content */}
       <div className="container mx-auto px-4 py-8 space-y-12">
-        
-        {/* Hero Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 p-8 md:p-12 lg:p-16 text-white shadow-2xl">
-          {/* Background decorations */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
-          <div className="absolute top-1/2 left-1/2 w-64 h-64 bg-blue-400/10 rounded-full blur-2xl -translate-x-1/2 -translate-y-1/2" />
-          
-          <div className="relative z-10 max-w-3xl">
-            <Badge className="mb-4 bg-white/20 text-white border-white/30 hover:bg-white/30">
-              <Sparkles className="h-3 w-3 mr-1" />
-              AI-Powered Assessment
-            </Badge>
-            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold mb-4 leading-tight">
-              Early Autism Screening
-              <br />
-              <span className="text-blue-200">Made Accessible</span>
-            </h2>
-            <p className="text-lg md:text-xl text-white/80 mb-8 max-w-2xl">
-              Our AI-powered platform provides quick, evidence-based autism spectrum screening using the validated AQ-10 questionnaire combined with machine learning analysis.
-            </p>
-            <div className="flex flex-wrap gap-4">
-              <Button 
-                size="lg" 
-                onClick={scrollToScreening}
-                className="bg-white text-blue-600 hover:bg-blue-50 shadow-xl shadow-black/20 gap-2 text-base"
-              >
-                Start Free Screening
-                <ArrowDown className="h-5 w-5" />
-              </Button>
-              {!session && (
-                <Link href="/auth">
-                  <Button 
-                    size="lg" 
-                    variant="secondary"
-                    className="gap-2 text-base bg-white/20 hover:bg-white/30 text-white border-0"
-                  >
-                    <LogIn className="h-5 w-5" />
-                    Sign In to Save Results
-                  </Button>
-                </Link>
-              )}
+
+        {/* Hero Section with autism imagery */}
+        <section className="glass-section scroll-fade">
+          <div className="glass-section-inner p-6 md:p-10 lg:p-12">
+            <div className="row g-4 align-items-center">
+              {/* Text / CTA */}
+              <div className="col-12 col-lg-6">
+                <div className="space-y-4">
+                  <Badge className="mb-2 bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 text-white border-transparent hover:bg-sky-500">
+                    <Sparkles className="h-3 w-3 mr-1" />
+                    AI-Powered Autism Screening
+                  </Badge>
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-sky-600 via-indigo-600 to-fuchsia-600 bg-clip-text text-transparent">
+                    Early Autism Screening
+                    <br />
+                    <span className="text-slate-900 dark:text-slate-100">
+                      <span className="text-sky-500">Made</span> Gentle & Visual
+                    </span>
+                  </h2>
+                  <p className="text-base md:text-lg text-slate-600 dark:text-slate-200/80 max-w-xl">
+                    A calm, colorful space for parents and clinicians to run
+                    science-backed AQ-10 screenings, visualize risk, and explore
+                    supportive next steps.
+                  </p>
+                  <div className="d-flex flex-wrap gap-3 mt-3">
+                    <Button
+                      size="lg"
+                      onClick={scrollToScreening}
+                      className="gap-2 text-base bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 hover:from-sky-600 hover:via-indigo-600 hover:to-fuchsia-600 shadow-lg shadow-sky-500/40"
+                    >
+                      Start Free Screening
+                      <ArrowDown className="h-5 w-5" />
+                    </Button>
+                    {!session && (
+                      <Link href="/auth" className="!no-underline ">
+                        <Button
+                          size="lg"
+                          variant="outline"
+                          className="gap-2 text-base border-sky-200 bg-white/70 hover:bg-white text-sky-700"
+                        >
+                          <LogIn className="h-5 w-5" />
+                          Sign in to save results
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
+                  <div className="d-flex flex-wrap gap-2 mt-4">
+                    <Badge variant="outline" className="bg-sky-50/80 text-sky-700 border-sky-200">
+                      <CheckCircle2 className="h-3 w-3 mr-1" />
+                      AQ-10 clinically validated
+                    </Badge>
+                    <Badge variant="outline" className="bg-indigo-50/80 text-indigo-700 border-indigo-200">
+                      <Brain className="h-3 w-3 mr-1" />
+                      ML-powered insights
+                    </Badge>
+                  </div>
+                </div>
+              </div>
+
+              {/* Visual / 3D style card with images */}
+              <div className="col-12 col-lg-6 mt-4 mt-lg-0">
+                <div className="neuro-hero-3d">
+                  <div className="neuro-hero-orbit" />
+                  <div className="neuro-hero-card">
+                    <div className="d-flex justify-content-between align-items-center mb-3">
+                      <div className="neuro-hero-pill">
+                        <Sparkles className="h-3 w-3" />
+                        Calm visual environment
+                      </div>
+                      <span className="text-xs text-slate-500 dark:text-slate-300">
+                        Autism-friendly colors
+                      </span>
+                    </div>
+
+                    <div className="rounded-2xl overflow-hidden mb-3 shadow-lg">
+                      <Image
+                        src="/images/autism5.jpg"
+                        alt="Autism awareness visual with ribbon"
+                        width={640}
+                        height={360}
+                        className="w-100 h-auto object-cover"
+                        priority
+                      />
+                    </div>
+
+                    <div className="neuro-hero-mini-grid">
+                      <div className="neuro-hero-mini-card">
+                        <div className="d-flex align-items-center gap-2 mb-2">
+                          <Image
+                            src="/images/autism1.jpg"
+                            alt="Child-focused autism support"
+                            width={40}
+                            height={40}
+                            className="rounded-lg object-cover"
+                          />
+                          <div>
+                            <p className="text-xs text-slate-500 dark:text-slate-300">Screening journey</p>
+                            <p className="text-sm font-semibold">Age 4–12 focus</p>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="neuro-hero-mini-card">
+                        <div className="d-flex align-items-center gap-2 mb-2">
+                          <Image
+                            src="/images/autism3.jpg"
+                            alt="Autism puzzle support"
+                            width={40}
+                            height={40}
+                            className="rounded-lg object-cover"
+                          />
+                          <div>
+                            <p className="text-xs text-slate-500 dark:text-slate-300">Therapy tasks</p>
+                            <p className="text-sm font-semibold">Visual progress</p>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-        </div>
+        </section>
 
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -275,40 +354,50 @@ export default function Home() {
           </Card>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-500 to-blue-600 text-white">
-            <CardContent className="pt-6 text-center">
-              <LineChart className="h-8 w-8 mx-auto mb-2 opacity-80" />
-              <p className="text-3xl font-bold">95%</p>
-              <p className="text-sm text-white/80">Model Accuracy</p>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-purple-500 to-purple-600 text-white">
-            <CardContent className="pt-6 text-center">
-              <Clock className="h-8 w-8 mx-auto mb-2 opacity-80" />
-              <p className="text-3xl font-bold">5 min</p>
-              <p className="text-sm text-white/80">Average Time</p>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-green-500 to-green-600 text-white">
-            <CardContent className="pt-6 text-center">
-              <CheckCircle2 className="h-8 w-8 mx-auto mb-2 opacity-80" />
-              <p className="text-3xl font-bold">AQ-10</p>
-              <p className="text-sm text-white/80">Validated Test</p>
-            </CardContent>
-          </Card>
-          <Card className="border-0 shadow-lg bg-gradient-to-br from-pink-500 to-pink-600 text-white">
-            <CardContent className="pt-6 text-center">
-              <Users className="h-8 w-8 mx-auto mb-2 opacity-80" />
-              <p className="text-3xl font-bold">Free</p>
-              <p className="text-sm text-white/80">For Everyone</p>
-            </CardContent>
-          </Card>
-        </div>
+        {/* Stats + autism imagery strip */}
+        <section className="scroll-fade-delayed space-y-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+            <Card className="border-0 shadow-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[url('/images/autism4.jpg')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="absolute inset-0 bg-white/60 dark:bg-white/40 backdrop-blur-sm" />
+              <CardContent className="pt-6 text-center relative z-10">
+                <LineChart className="h-8 w-8 mx-auto mb-2 text-rose-600" />
+                <p className="text-3xl font-bold text-slate-900">95%</p>
+                <p className="text-sm font-semibold text-slate-700">Model Accuracy</p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[url('/images/autism4.jpg')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="absolute inset-0 bg-white/60 dark:bg-white/40 backdrop-blur-sm" />
+              <CardContent className="pt-6 text-center relative z-10">
+                <Clock className="h-8 w-8 mx-auto mb-2 text-violet-600" />
+                <p className="text-3xl font-bold text-slate-900">5 min</p>
+                <p className="text-sm font-semibold text-slate-700">Average Time</p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[url('/images/autism4.jpg')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="absolute inset-0 bg-white/60 dark:bg-white/40 backdrop-blur-sm" />
+              <CardContent className="pt-6 text-center relative z-10">
+                <CheckCircle2 className="h-8 w-8 mx-auto mb-2 text-emerald-600" />
+                <p className="text-3xl font-bold text-slate-900">AQ-10</p>
+                <p className="text-sm font-semibold text-slate-700">Validated Test</p>
+              </CardContent>
+            </Card>
+            <Card className="border-0 shadow-lg relative overflow-hidden group">
+              <div className="absolute inset-0 bg-[url('/images/autism4.jpg')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity" />
+              <div className="absolute inset-0 bg-white/60 dark:bg-white/40 backdrop-blur-sm" />
+              <CardContent className="pt-6 text-center relative z-10">
+                <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <p className="text-3xl font-bold text-slate-900">Free</p>
+                <p className="text-sm font-semibold text-slate-700">For Everyone</p>
+              </CardContent>
+            </Card>
+          </div>
+        </section>
 
         {/* Screening Section */}
-        <div ref={screeningRef} className="scroll-mt-24">
+        <div id="screening" ref={screeningRef} className="scroll-mt-24">
           {showResults && screeningResult ? (
             <div className="space-y-6">
               <div className="flex items-center justify-between">
@@ -346,7 +435,7 @@ export default function Home() {
             </Card>
           )}
         </div>
-        
+
         {/* Disclaimer */}
         <Card className="border-0 shadow-lg bg-amber-50/80 dark:bg-amber-950/30 border-amber-200 dark:border-amber-800">
           <CardContent className="pt-6">
@@ -357,8 +446,8 @@ export default function Home() {
               <div>
                 <h4 className="font-semibold text-amber-800 dark:text-amber-200 mb-1">Important Disclaimer</h4>
                 <p className="text-sm text-amber-700 dark:text-amber-300">
-                  This tool is intended for screening purposes only and is NOT a diagnostic instrument. 
-                  A positive screening result does not mean a diagnosis of ASD. Please consult with a qualified healthcare professional 
+                  This tool is intended for screening purposes only and is NOT a diagnostic instrument.
+                  A positive screening result does not mean a diagnosis of ASD. Please consult with a qualified healthcare professional
                   for comprehensive evaluation and diagnosis.
                 </p>
               </div>
@@ -384,7 +473,7 @@ export default function Home() {
             </div>
             <div className="flex items-center gap-4 text-sm text-muted-foreground">
               {session && (
-                <Link href="/dashboard" className="hover:text-primary transition-colors">
+                <Link href="/dashboard" className="hover:text-primary transition-colors!no-underline ">
                   Dashboard
                 </Link>
               )}

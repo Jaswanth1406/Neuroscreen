@@ -117,7 +117,7 @@ export default function ProgressTrackerPage() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(newTask),
       })
-      
+
       if (response.ok) {
         const data = await response.json()
         setTasks([data.task, ...tasks])
@@ -240,7 +240,7 @@ export default function ProgressTrackerPage() {
           </p>
         </div>
         <div className="flex gap-3">
-          <Link href="/dashboard/clinical-support">
+          <Link href="/dashboard/clinical-support" className="!no-underline ">
             <Button variant="outline" className="gap-2">
               <MessageSquareHeart className="h-4 w-4" />
               Get AI Tasks
@@ -543,7 +543,7 @@ export default function ProgressTrackerPage() {
                   <Plus className="h-4 w-4" />
                   Add Task
                 </Button>
-                <Link href="/dashboard/clinical-support">
+                <Link href="/dashboard/clinical-support" className="!no-underline ">
                   <Button variant="outline" className="gap-2">
                     <MessageSquareHeart className="h-4 w-4" />
                     Get AI Tasks

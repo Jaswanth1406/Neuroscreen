@@ -20,6 +20,7 @@ import {
   MessageSquareHeart,
   ListTodo,
   ClipboardList,
+  ClipboardCheck,
   Settings,
   LogOut,
   Menu,
@@ -54,6 +55,12 @@ const navItems = [
     href: "/dashboard/history",
     icon: ClipboardList,
     description: "Past assessments",
+  },
+  {
+    title: "Start Screening",
+    href: "/dashboard/screening",
+    icon: ClipboardCheck,
+    description: "Take AQ-10 assessment",
   },
 ]
 
@@ -114,7 +121,7 @@ export default function DashboardLayout({
         <div className="flex flex-col h-full">
           {/* Logo */}
           <div className="p-6 border-b border-border/50">
-            <Link href="/" className="flex items-center gap-3">
+            <Link href="/" className="flex items-center gap-3 !no-underline ">
               <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
                 <Brain className="h-6 w-6 text-white" />
               </div>
@@ -135,7 +142,7 @@ export default function DashboardLayout({
                   prefetch={true}
                   onClick={() => setSidebarOpen(false)}
                   className={cn(
-                    "flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
+                    "!no-underline flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                     isActive
                       ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
                       : "hover:bg-slate-100 dark:hover:bg-gray-800 text-muted-foreground hover:text-foreground"
@@ -210,7 +217,7 @@ export default function DashboardLayout({
               {/* Notifications Bell */}
               <NotificationsDropdown />
 
-              <Link href="/">
+              <Link href="/dashboard/screening" className="!no-underline ">
                 <Button variant="outline" size="sm" className="gap-2">
                   <ClipboardList className="h-4 w-4" />
                   <span className="hidden sm:inline">New Screening</span>
@@ -237,13 +244,13 @@ export default function DashboardLayout({
                   </DropdownMenuLabel>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard" className="cursor-pointer">
+                    <Link href="/dashboard" className="cursor-pointer!no-underline ">
                       <LayoutDashboard className="mr-2 h-4 w-4" />
                       Dashboard
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link href="/dashboard/settings" className="cursor-pointer">
+                    <Link href="/dashboard/settings" className="cursor-pointer!no-underline ">
                       <Settings className="mr-2 h-4 w-4" />
                       Settings
                     </Link>

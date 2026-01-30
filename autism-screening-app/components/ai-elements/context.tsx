@@ -198,12 +198,12 @@ export const ContextContentFooter = ({
   const { modelId, usage } = useContextValue();
   const costUSD = modelId
     ? getUsage({
-        modelId,
-        usage: {
-          input: usage?.inputTokens ?? 0,
-          output: usage?.outputTokens ?? 0,
-        },
-      }).costUSD?.totalUSD
+      modelId,
+      usage: {
+        input: usage?.inputTokens ?? 0,
+        output: usage?.outputTokens ?? 0,
+      },
+    }).costUSD?.totalUSD
     : undefined;
   const totalCost = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -213,7 +213,7 @@ export const ContextContentFooter = ({
   return (
     <div
       className={cn(
-        "flex w-full items-center justify-between gap-3 bg-secondary p-3 text-xs",
+        "flex w-full items-center justify-between gap-3 bg-white-custom p-3 text-xs",
         className
       )}
       {...props}
@@ -248,9 +248,9 @@ export const ContextInputUsage = ({
 
   const inputCost = modelId
     ? getUsage({
-        modelId,
-        usage: { input: inputTokens, output: 0 },
-      }).costUSD?.totalUSD
+      modelId,
+      usage: { input: inputTokens, output: 0 },
+    }).costUSD?.totalUSD
     : undefined;
   const inputCostText = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -288,9 +288,9 @@ export const ContextOutputUsage = ({
 
   const outputCost = modelId
     ? getUsage({
-        modelId,
-        usage: { input: 0, output: outputTokens },
-      }).costUSD?.totalUSD
+      modelId,
+      usage: { input: 0, output: outputTokens },
+    }).costUSD?.totalUSD
     : undefined;
   const outputCostText = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -328,9 +328,9 @@ export const ContextReasoningUsage = ({
 
   const reasoningCost = modelId
     ? getUsage({
-        modelId,
-        usage: { reasoningTokens },
-      }).costUSD?.totalUSD
+      modelId,
+      usage: { reasoningTokens },
+    }).costUSD?.totalUSD
     : undefined;
   const reasoningCostText = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -368,9 +368,9 @@ export const ContextCacheUsage = ({
 
   const cacheCost = modelId
     ? getUsage({
-        modelId,
-        usage: { cacheReads: cacheTokens, input: 0, output: 0 },
-      }).costUSD?.totalUSD
+      modelId,
+      usage: { cacheReads: cacheTokens, input: 0, output: 0 },
+    }).costUSD?.totalUSD
     : undefined;
   const cacheCostText = new Intl.NumberFormat("en-US", {
     style: "currency",
@@ -399,8 +399,8 @@ const TokensWithCost = ({
     {tokens === undefined
       ? "—"
       : new Intl.NumberFormat("en-US", {
-          notation: "compact",
-        }).format(tokens)}
+        notation: "compact",
+      }).format(tokens)}
     {costText ? (
       <span className="ml-2 text-muted-foreground">• {costText}</span>
     ) : null}

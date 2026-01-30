@@ -16,11 +16,11 @@ export default function AuthPage() {
   const router = useRouter()
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState("")
-  
+
   // Login form state
   const [loginEmail, setLoginEmail] = useState("")
   const [loginPassword, setLoginPassword] = useState("")
-  
+
   // Signup form state
   const [signupName, setSignupName] = useState("")
   const [signupEmail, setSignupEmail] = useState("")
@@ -88,7 +88,7 @@ export default function AuthPage() {
       <div className="w-full max-w-md">
         {/* Logo */}
         <div className="text-center mb-8">
-          <Link href="/" className="inline-flex items-center gap-2">
+          <Link href="/" className="inline-flex items-center gap-2 !no-underline text-decoration-none">
             <div className="p-3 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
               <Brain className="h-8 w-8 text-white" />
             </div>
@@ -118,8 +118,8 @@ export default function AuthPage() {
               )}
 
               {/* Google Sign In */}
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 className="w-full h-12 gap-3"
                 onClick={handleGoogleSignIn}
                 disabled={isLoading}
@@ -154,7 +154,7 @@ export default function AuthPage() {
                   <Separator className="w-full" />
                 </div>
                 <div className="relative flex justify-center text-xs uppercase">
-                  <span className="bg-background px-2 text-muted-foreground">
+                  <span className="bg-white dark:bg-gray-950 px-2 text-muted-foreground">
                     Or continue with email
                   </span>
                 </div>
@@ -171,7 +171,7 @@ export default function AuthPage() {
                         id="login-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10"
+                        className="!pl-12"
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
                         required
@@ -186,7 +186,7 @@ export default function AuthPage() {
                         id="login-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10"
+                        className="!pl-12"
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         required
@@ -214,7 +214,7 @@ export default function AuthPage() {
                         id="signup-name"
                         type="text"
                         placeholder="John Doe"
-                        className="pl-10"
+                        className="!pl-12"
                         value={signupName}
                         onChange={(e) => setSignupName(e.target.value)}
                         required
@@ -229,7 +229,7 @@ export default function AuthPage() {
                         id="signup-email"
                         type="email"
                         placeholder="you@example.com"
-                        className="pl-10"
+                        className="!pl-12"
                         value={signupEmail}
                         onChange={(e) => setSignupEmail(e.target.value)}
                         required
@@ -244,7 +244,7 @@ export default function AuthPage() {
                         id="signup-password"
                         type="password"
                         placeholder="••••••••"
-                        className="pl-10"
+                        className="!pl-12"
                         value={signupPassword}
                         onChange={(e) => setSignupPassword(e.target.value)}
                         required
@@ -274,8 +274,8 @@ export default function AuthPage() {
           </Tabs>
         </Card>
 
-        <p className="text-center text-sm text-muted-foreground mt-6">
-          <Link href="/" className="hover:text-primary transition-colors">
+        <p className="text-center text-sm text-muted-foreground ">
+          <Link href="/" className="hover:text-primary transition-colors !no-underline text-decoration-none inline-block mt-8">
             ← Back to Home
           </Link>
         </p>

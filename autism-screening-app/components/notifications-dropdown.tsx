@@ -145,9 +145,9 @@ export function NotificationsDropdown() {
             </p>
           </div>
           {activeCount > 0 && (
-            <Button 
-              variant="ghost" 
-              size="sm" 
+            <Button
+              variant="ghost"
+              size="sm"
               className="text-xs h-7"
               onClick={clearAllNotifications}
             >
@@ -192,8 +192,8 @@ export function NotificationsDropdown() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1">
                         <span className="font-medium text-sm">{notification.title}</span>
-                        <Badge 
-                          variant="secondary" 
+                        <Badge
+                          variant="secondary"
                           className={cn("h-5 text-[10px] text-white", getCategoryColor(notification.category))}
                         >
                           {notification.category}
@@ -203,10 +203,10 @@ export function NotificationsDropdown() {
                         {notification.message}
                       </p>
                       <div className="flex items-center gap-2 mt-2">
-                        <Link 
-                          href="/dashboard/progress" 
+                        <Link
+                          href="/dashboard/progress"
                           onClick={() => setIsOpen(false)}
-                          className="text-xs text-primary hover:underline flex items-center gap-1"
+                          className="!no-underline text-xs text-primary hover:underline flex items-center gap-1"
                         >
                           View task <ExternalLink className="h-3 w-3" />
                         </Link>
@@ -229,7 +229,7 @@ export function NotificationsDropdown() {
 
         {/* Footer */}
         <div className="p-3 border-t bg-muted/30">
-          <Link href="/dashboard/progress" onClick={() => setIsOpen(false)}>
+          <Link href="/dashboard/progress" onClick={() => setIsOpen(false)} className="!no-underline ">
             <Button variant="outline" size="sm" className="w-full text-xs">
               View all tasks
             </Button>
