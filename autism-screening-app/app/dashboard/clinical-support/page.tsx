@@ -71,9 +71,68 @@ export default function ClinicalSupportPage() {
   const [mounted, setMounted] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
 
+  const [context, setContext] = useState<string>("")
+
+  // Fetch screening history to build context
+  useEffect(() => {
+    const fetchContext = async () => {
+      try {
+        const res = await fetch("/api/screening-history")
+        if (res.ok) {
+          const data = await res.json()
+          if (data.history && data.history.length > 0) {
+            const latest = data.history[0]
+
+            // Format demographics
+            const demo = latest.demographics || {}
+            const demographicText = `
+User Profile:
+- Age: ${demo.age || "Unknown"}
+- Gender: ${demo.gender || "Unknown"}
+- Born with Jaundice: ${demo.jaundice || "Unknown"}
+- Family History of ASD: ${demo.austim || "Unknown"}
+            `.trim()
+
+            // Format answers
+            let answerText = ""
+            if (latest.formatted_answers && latest.formatted_answers.length > 0) {
+              answerText = latest.formatted_answers.join("\n")
+            } else {
+              // Fallback for old records
+              const answers = latest.answers || {}
+              answerText = Object.entries(answers)
+                .map(([key, val]) => {
+                  return `- Question ${key}: ${val === 1 ? "Agree/Yes" : "Disagree/No"}`
+                })
+                .join("\n")
+            }
+
+            const contextString = `
+SCREENING CONTEXT:
+Risk Level: ${latest.risk_level}
+Probability: ${(latest.probability * 100).toFixed(1)}%
+
+${demographicText}
+
+Questionnaire Responses:
+${answerText}
+            `.trim()
+
+            setContext(contextString)
+            console.log("Loaded context:", contextString)
+          }
+        }
+      } catch (error) {
+        console.error("Failed to fetch screening context:", error)
+      }
+    }
+    if (session) fetchContext()
+  }, [session])
+
   const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages, reload } = useChat({
     api: "/api/clinical-chat",
     streamProtocol: "text",
+    body: { context }
   })
 
   useEffect(() => {
@@ -152,11 +211,11 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
     // or just **Task:** Task title (defaults based on content keywords)
     const taskMatches = content.matchAll(/\*\*Task:\*\*\s*(?:\[([^\]]+)\]\s*)?(.+?)(?:\n|$)/g)
     const tasks: { title: string; category: string }[] = []
-    
+
     for (const match of taskMatches) {
       const explicitCategory = match[1]?.trim()
       const title = match[2].trim()
-      
+
       // Determine category from explicit tag, or infer from keywords
       let category = "Therapy"
       if (explicitCategory) {
@@ -178,7 +237,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
           category = "Emotional"
         }
       }
-      
+
       tasks.push({ title, category })
     }
     return tasks
@@ -232,7 +291,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                         </div>
                       </div>
                     )}
-                    
+
                     <div className={cn(
                       "flex flex-col max-w-[80%]",
                       message.role === "user" ? "items-end" : "items-start"
@@ -242,10 +301,10 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                           Clinical Support AI
                         </span>
                       )}
-                      
+
                       <div className={cn(
                         "rounded-2xl px-4 py-3 shadow-sm",
-                        message.role === "user" 
+                        message.role === "user"
                           ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-tr-sm"
                           : "bg-slate-100 dark:bg-gray-800 rounded-tl-sm"
                       )}>
@@ -287,7 +346,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                           )}
                         </div>
                       )}
-                      
+
                       {/* Task extraction */}
                       {message.role === "assistant" && message.content.includes("**Task:**") && (
                         <div className="mt-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200/50 dark:border-blue-800/50 w-full">
@@ -325,7 +384,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                     )}
                   </div>
                 ))}
-                
+
                 {/* Loading indicator */}
                 {isLoading && (
                   <div className="flex gap-4">

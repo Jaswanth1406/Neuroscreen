@@ -23,6 +23,32 @@ export interface ScreeningResult {
     }>
     recommendations?: string[]
     evidence_summary?: string
+    answers?: Record<string, number>
+    demographics?: {
+        age: string
+        gender: string
+        ethnicity: string
+        jaundice: string
+        austim: string
+        used_app_before: string
+    }
+    formatted_answers?: string[]
+    fusion_details?: {
+        aq10_contribution: string
+        physical_contribution: string
+        speech_contribution: string
+        original_aq10_prob: number
+        original_physical_score: number
+        original_speech_score: number
+    }
+    video_analysis?: {
+        score?: number // Legacy
+        reason?: string // Legacy
+        physical_score?: number
+        physical_reason?: string
+        speech_score?: number
+        speech_reason?: string
+    }
 }
 
 export default function ScreeningPage() {
@@ -48,6 +74,13 @@ export default function ScreeningPage() {
                         social_score: result.social_score,
                         attention_score: result.attention_score,
                         contributing_factors: result.contributing_factors,
+                        answers: result.answers, // Send raw answers
+                        demographics: result.demographics, // Send demographics
+                        formatted_answers: result.formatted_answers, // Send descriptive answers
+                        physical_score: result.video_analysis?.physical_score,
+                        physical_reason: result.video_analysis?.physical_reason,
+                        speech_score: result.video_analysis?.speech_score,
+                        speech_reason: result.video_analysis?.speech_reason
                     }),
                 })
             } catch (error) {

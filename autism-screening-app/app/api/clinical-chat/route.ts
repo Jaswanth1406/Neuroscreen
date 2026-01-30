@@ -8,9 +8,9 @@ const groq = createGroq({
 export const maxDuration = 30
 
 export async function POST(req: Request) {
-  const { messages } = await req.json()
+  const { messages, context } = await req.json()
 
-  const systemPrompt = `You are a compassionate and knowledgeable AI Clinical Support Assistant specializing in autism spectrum disorder (ASD) therapy and developmental support. Your role is to provide helpful, evidence-based guidance while being warm and understanding.
+  let systemPrompt = `You are a compassionate and knowledgeable AI Clinical Support Assistant specializing in autism spectrum disorder (ASD) therapy and developmental support. Your role is to provide helpful, evidence-based guidance while being warm and understanding.
 
 GUIDELINES:
 1. **Be Empathetic**: Always respond with warmth and understanding. Acknowledge the challenges individuals and families face.
@@ -53,6 +53,23 @@ GUIDELINES:
 7. **Encouragement**: Celebrate small wins and progress. Remind users that every step forward matters.
 
 Remember: You are a supportive guide, not a replacement for professional medical care. Always encourage users to work with qualified healthcare providers for comprehensive treatment.`
+
+  // Load Knowledge Base
+  try {
+    const fs = await import("fs/promises")
+    const path = await import("path")
+    // Assuming process.cwd() is autism-screening-app, go up one level
+    const kbPath = path.join(process.cwd(), "../KNOWLEDGE_BASE.txt")
+    const kbContent = await fs.readFile(kbPath, "utf-8")
+
+    systemPrompt += `\n\n### CLINICAL KNOWLEDGE BASE\nUse the following detailed clinical definitions to guide your advice:\n\n${kbContent}\n\n### END KNOWLEDGE BASE`
+  } catch (error) {
+    console.error("Failed to load Knowledge Base:", error)
+  }
+
+  if (context) {
+    systemPrompt += `\n\n### USER CONTEXT\n${context}\n\nIMPORTANT: Use the above context to personalize your advice. Reference the user's specific answers and demographic details where appropriate.`
+  }
 
   const result = streamText({
     model: groq("llama-3.3-70b-versatile"),

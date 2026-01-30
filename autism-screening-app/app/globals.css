@@ -521,7 +521,7 @@
 }
 
 .sr-only:focus,
-.sr-only.focus\\:not-sr-only:focus {
+.sr-only.focus\:not-sr-only:focus {
   position: static;
   width: auto;
   height: auto;
