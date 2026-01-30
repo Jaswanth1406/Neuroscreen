@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef, useCallback } from "react"
 import { useChat } from "@ai-sdk/react"
 import { useSession } from "@/lib/auth-client"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -19,9 +19,60 @@ import {
   Copy,
   Check,
   RefreshCw,
+  Mic,
+  MicOff,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import ReactMarkdown from "react-markdown"
+
+// Type definitions for Web Speech API
+interface SpeechRecognitionEvent extends Event {
+  results: SpeechRecognitionResultList
+  resultIndex: number
+}
+
+interface SpeechRecognitionResultList {
+  length: number
+  item(index: number): SpeechRecognitionResult
+  [index: number]: SpeechRecognitionResult
+}
+
+interface SpeechRecognitionResult {
+  length: number
+  item(index: number): SpeechRecognitionAlternative
+  [index: number]: SpeechRecognitionAlternative
+  isFinal: boolean
+}
+
+interface SpeechRecognitionAlternative {
+  transcript: string
+  confidence: number
+}
+
+interface SpeechRecognitionErrorEvent extends Event {
+  error: string
+  message?: string
+}
+
+interface SpeechRecognition extends EventTarget {
+  continuous: boolean
+  interimResults: boolean
+  lang: string
+  start(): void
+  stop(): void
+  abort(): void
+  onresult: ((event: SpeechRecognitionEvent) => void) | null
+  onerror: ((event: SpeechRecognitionErrorEvent) => void) | null
+  onend: (() => void) | null
+  onstart: (() => void) | null
+}
+
+declare global {
+  interface Window {
+    SpeechRecognition: new () => SpeechRecognition
+    webkitSpeechRecognition: new () => SpeechRecognition
+  }
+}
 
 interface TherapyTask {
   id: string
@@ -70,8 +121,96 @@ export default function ClinicalSupportPage() {
   const [tasks, setTasks] = useState<TherapyTask[]>([])
   const [mounted, setMounted] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
+  const [isListening, setIsListening] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(false)
+  const [interimTranscript, setInterimTranscript] = useState("")
+  const [voiceInput, setVoiceInput] = useState("")
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
 
   const [context, setContext] = useState<string>("")
+
+  // useChat must be called before any effects that use its values
+  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages, reload } = useChat({
+    api: "/api/clinical-chat",
+    streamProtocol: "text",
+    body: { context }
+  })
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const SpeechRecognitionAPI = window.SpeechRecognition || window.webkitSpeechRecognition
+      if (SpeechRecognitionAPI) {
+        setSpeechSupported(true)
+        const recognition = new SpeechRecognitionAPI()
+        recognition.continuous = true
+        recognition.interimResults = true
+        recognition.lang = 'en-US'
+        
+        recognition.onstart = () => {
+          setIsListening(true)
+        }
+        
+        recognition.onresult = (event: SpeechRecognitionEvent) => {
+          let interim = ''
+          let final = ''
+          
+          for (let i = event.resultIndex; i < event.results.length; i++) {
+            const transcript = event.results[i][0].transcript
+            if (event.results[i].isFinal) {
+              final += transcript
+            } else {
+              interim += transcript
+            }
+          }
+          
+          if (final) {
+            setVoiceInput(prev => prev + final)
+            setInterimTranscript('')
+          } else {
+            setInterimTranscript(interim)
+          }
+        }
+        
+        recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
+          console.error('Speech recognition error:', event.error)
+          setIsListening(false)
+          setInterimTranscript('')
+        }
+        
+        recognition.onend = () => {
+          setIsListening(false)
+          setInterimTranscript('')
+        }
+        
+        recognitionRef.current = recognition
+      }
+    }
+    
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.abort()
+      }
+    }
+  }, [])
+
+  const toggleListening = useCallback(() => {
+    if (!recognitionRef.current) return
+    
+    if (isListening) {
+      recognitionRef.current.stop()
+    } else {
+      recognitionRef.current.start()
+    }
+  }, [isListening])
+
+  // Sync voice input with chat input
+  useEffect(() => {
+    if (voiceInput) {
+      setInput(input + voiceInput)
+      setVoiceInput("")
+    }
+  }, [voiceInput, input, setInput])
 
   // Fetch screening history to build context
   useEffect(() => {
@@ -128,12 +267,6 @@ ${answerText}
     }
     if (session) fetchContext()
   }, [session])
-
-  const { messages, input, handleInputChange, handleSubmit, isLoading, setInput, setMessages, reload } = useChat({
-    api: "/api/clinical-chat",
-    streamProtocol: "text",
-    body: { context }
-  })
 
   useEffect(() => {
     setMounted(true)
@@ -440,14 +573,19 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
               </div>
             )}
 
-            {/* Input Area - ChatGPT Style */}
+            {/* Input Area - ChatGPT Style with Voice */}
             <div className="p-4 border-t border-border/50 bg-white dark:bg-gray-900">
               <form onSubmit={handleSubmit} className="relative">
-                <div className="flex items-end gap-2 rounded-2xl border border-border bg-slate-50 dark:bg-gray-800 p-2 focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20 transition-all shadow-sm">
+                <div className={cn(
+                  "flex items-end gap-2 rounded-2xl border bg-slate-50 dark:bg-gray-800 p-2 transition-all shadow-sm",
+                  isListening 
+                    ? "border-red-400 ring-2 ring-red-400/30" 
+                    : "border-border focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
+                )}>
                   <textarea
-                    value={input}
+                    value={input + interimTranscript}
                     onChange={handleInputChange}
-                    placeholder="Message Clinical Support AI..."
+                    placeholder={isListening ? "🎤 Listening... speak now" : "Message Clinical Support AI..."}
                     rows={1}
                     className="flex-1 min-h-[44px] max-h-[200px] resize-none border-0 bg-transparent focus:ring-0 focus:outline-none text-sm px-3 py-3"
                     style={{ height: 'auto' }}
@@ -463,13 +601,33 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                       }
                     }}
                   />
+                  {speechSupported && (
+                    <Button
+                      type="button"
+                      size="icon"
+                      variant={isListening ? "default" : "ghost"}
+                      className={cn(
+                        "h-10 w-10 rounded-xl flex-shrink-0 transition-all",
+                        isListening && "bg-red-500 hover:bg-red-600 animate-pulse text-white"
+                      )}
+                      onClick={toggleListening}
+                      disabled={isLoading}
+                      title={isListening ? "Stop listening" : "Voice input"}
+                    >
+                      {isListening ? (
+                        <MicOff className="h-4 w-4" />
+                      ) : (
+                        <Mic className="h-4 w-4" />
+                      )}
+                    </Button>
+                  )}
                   <Button
                     type="submit"
                     size="icon"
-                    disabled={isLoading || !input.trim()}
+                    disabled={isLoading || (!input.trim() && !interimTranscript.trim())}
                     className={cn(
                       "h-10 w-10 rounded-xl transition-all flex-shrink-0",
-                      input.trim()
+                      (input.trim() || interimTranscript.trim())
                         ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
                         : "bg-slate-200 dark:bg-gray-700 text-muted-foreground"
                     )}
@@ -483,7 +641,13 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                 </div>
               </form>
               <p className="text-[10px] text-center text-muted-foreground mt-2">
-                AI provides supportive guidance only. Always consult healthcare professionals for medical advice.
+                {isListening ? (
+                  <span className="text-red-500">🔴 Recording... click mic to stop</span>
+                ) : speechSupported ? (
+                  "Press Enter to send or use 🎤 for voice input. AI provides supportive guidance only."
+                ) : (
+                  "AI provides supportive guidance only. Always consult healthcare professionals for medical advice."
+                )}
               </p>
             </div>
           </CardContent>

@@ -29,6 +29,7 @@ import {
   Sparkles,
   BarChart3,
   Gamepad2,
+  FileText,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { NotificationsDropdown } from "@/components/notifications-dropdown"
@@ -64,6 +65,12 @@ const navItems = [
     href: "/dashboard/therapy-games",
     icon: Gamepad2,
     description: "Interactive exercises",
+  },
+  {
+    title: "Clinical Reports",
+    href: "/dashboard/reports",
+    icon: FileText,
+    description: "Generate reports",
   },
   {
     title: "Screening History",
