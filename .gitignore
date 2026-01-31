@@ -9,6 +9,9 @@ out/
 build/
 dist/
 
+# Next.js config (contains local paths)
+autism-screening-app/next.config.ts
+
 # Production
 *.tsbuildinfo
 next-env.d.ts
