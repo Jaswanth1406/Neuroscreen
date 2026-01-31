@@ -35,13 +35,13 @@ export type ToolHeaderProps = {
   title?: string;
   className?: string;
 } & (
-  | { type: ToolUIPart["type"]; state: ToolUIPart["state"]; toolName?: never }
-  | {
+    | { type: ToolUIPart["type"]; state: ToolUIPart["state"]; toolName?: never }
+    | {
       type: DynamicToolUIPart["type"];
       state: DynamicToolUIPart["state"];
       toolName: string;
     }
-);
+  );
 
 export const getStatusBadge = (status: ToolPart["state"]) => {
   const labels: Record<ToolPart["state"], string> = {
@@ -58,7 +58,7 @@ export const getStatusBadge = (status: ToolPart["state"]) => {
     "input-streaming": <CircleIcon className="size-4" />,
     "input-available": <ClockIcon className="size-4 animate-pulse" />,
     "approval-requested": <ClockIcon className="size-4 text-yellow-600" />,
-    "approval-responded": <CheckCircleIcon className="size-4 text-blue-600" />,
+    "approval-responded": <CheckCircleIcon className="size-4 text-teal-600" />,
     "output-available": <CheckCircleIcon className="size-4 text-green-600" />,
     "output-error": <XCircleIcon className="size-4 text-red-600" />,
     "output-denied": <XCircleIcon className="size-4 text-orange-600" />,

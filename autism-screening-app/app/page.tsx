@@ -120,13 +120,13 @@ export default function Home() {
           <div className="flex items-center justify-between">
             <Link href="/" className="flex head1!no-underline text-decoration-none items-center gap-3 hover:opacity-80 transition-opacity">
               <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl blur-lg opacity-50" />
-                <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+                <div className="absolute inset-0 bg-gradient-to-br from-emerald-500 to-teal-500 rounded-xl blur-lg opacity-50" />
+                <div className="relative p-2.5 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 shadow-lg">
                   <Brain className="h-7 w-7 text-white" />
                 </div>
               </div>
               <div>
-                <h1 className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+                <h1 className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                   NeuroScreen
                 </h1>
                 <p className="text-xs text-muted-foreground hidden sm:block">
@@ -142,7 +142,7 @@ export default function Home() {
               ) : session ? (
                 <>
                   <Link href="/dashboard" className="!no-underline ">
-                    <Button variant="outline" className="gap-2 border-blue-200 dark:border-blue-800 hover:bg-blue-50 dark:hover:bg-blue-950">
+                    <Button variant="outline" className="gap-2 border-emerald-200 dark:border-emerald-800 hover:bg-emerald-50 dark:hover:bg-emerald-950">
                       <LayoutDashboard className="h-4 w-4" />
                       <span className="hidden sm:inline">Dashboard</span>
                     </Button>
@@ -150,9 +150,9 @@ export default function Home() {
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button variant="ghost" size="icon" className="relative">
-                        <Avatar className="h-9 w-9 ring-2 ring-blue-500/20">
+                        <Avatar className="h-9 w-9 ring-2 ring-emerald-500/20">
                           <AvatarImage src={session.user.image || ""} alt={session.user.name || ""} />
-                          <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                          <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-500 text-white">
                             {session.user.name?.charAt(0).toUpperCase() || "U"}
                           </AvatarFallback>
                         </Avatar>
@@ -183,7 +183,7 @@ export default function Home() {
                 </>
               ) : (
                 <Link href="/auth" className="!no-underline ">
-                  <Button className="gap-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 shadow-lg shadow-blue-500/25">
+                  <Button className="gap-2 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 shadow-lg shadow-emerald-500/25">
                     <LogIn className="h-4 w-4" />
                     <span className="hidden sm:inline">Sign In</span>
                   </Button>
@@ -200,19 +200,19 @@ export default function Home() {
         {/* Hero Section with autism imagery */}
         <section className="glass-section scroll-fade">
           <div className="glass-section-inner p-6 md:p-10 lg:p-12">
-            <div className="row g-4 align-items-center">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-center">
               {/* Text / CTA */}
-              <div className="col-12 col-lg-6">
+              <div>
                 <div className="space-y-4">
-                  <Badge className="mb-2 bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 text-white border-transparent hover:bg-sky-500">
+                  <Badge className="mb-2 bg-gradient-to-r from-emerald-500 via-teal-500 to-teal-600 text-white border-transparent hover:bg-emerald-500">
                     <Sparkles className="h-3 w-3 mr-1" />
                     AI-Powered Autism Screening
                   </Badge>
-                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-sky-600 via-indigo-600 to-fuchsia-600 bg-clip-text text-transparent">
+                  <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold leading-tight bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-600 bg-clip-text text-transparent">
                     Early Autism Screening
                     <br />
                     <span className="text-slate-900 dark:text-slate-100">
-                      <span className="text-sky-500">Made</span> Gentle & Visual
+                      <span className="text-emerald-500">Made</span> Gentle & Visual
                     </span>
                   </h2>
                   <p className="text-base md:text-lg text-slate-600 dark:text-slate-200/80 max-w-xl">
@@ -220,11 +220,11 @@ export default function Home() {
                     science-backed AQ-10 screenings, visualize risk, and explore
                     supportive next steps.
                   </p>
-                  <div className="d-flex flex-wrap gap-3 mt-3">
+                  <div className="flex flex-wrap gap-3 mt-3">
                     <Button
                       size="lg"
                       onClick={scrollToScreening}
-                      className="gap-2 text-base bg-gradient-to-r from-sky-500 via-indigo-500 to-fuchsia-500 hover:from-sky-600 hover:via-indigo-600 hover:to-fuchsia-600 shadow-lg shadow-sky-500/40"
+                      className="gap-2 text-base bg-gradient-to-r from-emerald-500 via-teal-500 to-teal-600 hover:from-emerald-600 hover:via-teal-600 hover:to-teal-700 shadow-lg shadow-emerald-500/40"
                     >
                       Start Free Screening
                       <ArrowDown className="h-5 w-5" />
@@ -234,7 +234,7 @@ export default function Home() {
                         <Button
                           size="lg"
                           variant="outline"
-                          className="gap-2 text-base border-sky-200 bg-white/70 hover:bg-white text-sky-700"
+                          className="gap-2 text-base border-emerald-200 bg-white/70 hover:bg-white text-emerald-700"
                         >
                           <LogIn className="h-5 w-5" />
                           Sign in to save results
@@ -242,12 +242,12 @@ export default function Home() {
                       </Link>
                     )}
                   </div>
-                  <div className="d-flex flex-wrap gap-2 mt-4">
-                    <Badge variant="outline" className="bg-sky-50/80 text-sky-700 border-sky-200">
+                  <div className="flex flex-wrap gap-2 mt-4">
+                    <Badge variant="outline" className="bg-emerald-50/80 text-emerald-700 border-emerald-200">
                       <CheckCircle2 className="h-3 w-3 mr-1" />
                       AQ-10 clinically validated
                     </Badge>
-                    <Badge variant="outline" className="bg-indigo-50/80 text-indigo-700 border-indigo-200">
+                    <Badge variant="outline" className="bg-teal-50/80 text-teal-700 border-teal-200">
                       <Brain className="h-3 w-3 mr-1" />
                       ML-powered insights
                     </Badge>
@@ -256,11 +256,11 @@ export default function Home() {
               </div>
 
               {/* Visual / 3D style card with images */}
-              <div className="col-12 col-lg-6 mt-4 mt-lg-0">
+              <div>
                 <div className="neuro-hero-3d">
                   <div className="neuro-hero-orbit" />
                   <div className="neuro-hero-card">
-                    <div className="d-flex justify-content-between align-items-center mb-3">
+                    <div className="flex justify-between items-center mb-3">
                       <div className="neuro-hero-pill">
                         <Sparkles className="h-3 w-3" />
                         Calm visual environment
@@ -276,14 +276,14 @@ export default function Home() {
                         alt="Autism awareness visual with ribbon"
                         width={640}
                         height={360}
-                        className="w-100 h-auto object-cover"
+                        className="w-full h-auto object-cover"
                         priority
                       />
                     </div>
 
                     <div className="neuro-hero-mini-grid">
                       <div className="neuro-hero-mini-card">
-                        <div className="d-flex align-items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2">
                           <Image
                             src="/images/autism1.jpg"
                             alt="Child-focused autism support"
@@ -298,7 +298,7 @@ export default function Home() {
                         </div>
                       </div>
                       <div className="neuro-hero-mini-card">
-                        <div className="d-flex align-items-center gap-2 mb-2">
+                        <div className="flex items-center gap-2 mb-2">
                           <Image
                             src="/images/autism3.jpg"
                             alt="Autism puzzle support"
@@ -324,7 +324,7 @@ export default function Home() {
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
           <Card className="border-0 shadow-lg bg-white/70 dark:bg-gray-800/70 backdrop-blur-sm hover:shadow-xl transition-all hover:-translate-y-1">
             <CardContent className="pt-6">
-              <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-blue-600 w-fit mb-4 shadow-lg shadow-blue-500/25">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 w-fit mb-4 shadow-lg shadow-emerald-500/25">
                 <Zap className="h-6 w-6 text-white" />
               </div>
               <h3 className="font-semibold text-lg mb-2">Quick Assessment</h3>
@@ -405,7 +405,7 @@ export default function Home() {
               <div className="absolute inset-0 bg-[url('/images/autism4.jpg')] bg-cover bg-center opacity-20 group-hover:opacity-30 transition-opacity" />
               <div className="absolute inset-0 bg-white/60 dark:bg-white/40 backdrop-blur-sm" />
               <CardContent className="pt-6 text-center relative z-10">
-                <Users className="h-8 w-8 mx-auto mb-2 text-blue-600" />
+                <Users className="h-8 w-8 mx-auto mb-2 text-teal-600" />
                 <p className="text-3xl font-bold text-slate-900">Free</p>
                 <p className="text-sm font-semibold text-slate-700">For Everyone</p>
               </CardContent>
@@ -437,7 +437,7 @@ export default function Home() {
             <Card className="border-0 shadow-xl bg-white/80 dark:bg-gray-800/80 backdrop-blur-sm">
               <CardHeader>
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+                  <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
                     <ClipboardList className="h-5 w-5 text-white" />
                   </div>
                   <div>
@@ -480,10 +480,10 @@ export default function Home() {
         <div className="container mx-auto px-4 py-8">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-lg bg-gradient-to-br from-blue-500 to-purple-600">
+              <div className="p-2 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600">
                 <Brain className="h-5 w-5 text-white" />
               </div>
-              <span className="font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="font-semibold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 NeuroScreen
               </span>
             </div>

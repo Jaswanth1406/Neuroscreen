@@ -43,7 +43,7 @@ import { motion, AnimatePresence } from "motion/react"
 // Emotion data for the recognition game
 const EMOTIONS = [
   { name: "Happy", emoji: "😊", color: "bg-yellow-100 text-yellow-700" },
-  { name: "Sad", emoji: "😢", color: "bg-blue-100 text-blue-700" },
+  { name: "Sad", emoji: "😢", color: "bg-slate-100 text-slate-700" },
   { name: "Angry", emoji: "😠", color: "bg-red-100 text-red-700" },
   { name: "Surprised", emoji: "😮", color: "bg-purple-100 text-purple-700" },
   { name: "Scared", emoji: "😨", color: "bg-orange-100 text-orange-700" },
@@ -193,11 +193,11 @@ export default function TherapyGamesPage() {
   const fetchNewAchievements = useCallback(async (currentStats: GameStats) => {
     // Only fetch if user has some progress
     if (currentStats.totalPoints < 50) return
-    
+
     // Check if we should generate new achievements (every 100 points or when all are unlocked)
     const unlockedCount = currentStats.achievements.length
     const totalAvailable = 4 + dynamicAchievements.length // 4 static + dynamic
-    
+
     // Generate new ones if user has unlocked most achievements
     if (unlockedCount >= totalAvailable - 1 && !isLoadingAchievements) {
       setIsLoadingAchievements(true)
@@ -205,14 +205,14 @@ export default function TherapyGamesPage() {
         const response = await fetch("/api/generate-achievements", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ 
-            stats: currentStats, 
-            unlockedAchievements: currentStats.achievements 
+          body: JSON.stringify({
+            stats: currentStats,
+            unlockedAchievements: currentStats.achievements
           }),
         })
-        
+
         const data = await response.json()
-        
+
         if (data.success && data.achievements) {
           const newAchievements = [...dynamicAchievements, ...data.achievements]
           setDynamicAchievements(newAchievements)
@@ -235,8 +235,8 @@ export default function TherapyGamesPage() {
       case "breathing_sessions": return currentStats.breathingSessions >= value
       case "breathing_minutes": return currentStats.breathingMinutes >= value
       case "social_correct": return currentStats.socialCorrect >= value
-      case "social_rate": 
-        return currentStats.socialTotal > 0 && 
+      case "social_rate":
+        return currentStats.socialTotal > 0 &&
           (currentStats.socialCorrect / currentStats.socialTotal) * 100 >= value
       case "total_points": return currentStats.totalPoints >= value
       default: return false
@@ -254,7 +254,7 @@ export default function TherapyGamesPage() {
   // Check and award achievements
   const checkAchievements = useCallback((newStats: GameStats) => {
     const newAchievements: string[] = [...newStats.achievements]
-    
+
     // Static achievements
     if (newStats.emotionScore >= 10 && !newAchievements.includes("emotion_10")) {
       newAchievements.push("emotion_10")
@@ -272,7 +272,7 @@ export default function TherapyGamesPage() {
       newAchievements.push("social_5")
       setShowAchievement("Social Star: 5 correct responses!")
     }
-    
+
     // Check dynamic achievements
     for (const achievement of dynamicAchievements) {
       if (!newAchievements.includes(achievement.id) && isDynamicAchievementUnlocked(achievement, newStats)) {
@@ -280,7 +280,7 @@ export default function TherapyGamesPage() {
         setShowAchievement(`${achievement.name}: ${achievement.description}`)
       }
     }
-    
+
     return { ...newStats, achievements: newAchievements }
   }, [dynamicAchievements, isDynamicAchievementUnlocked])
 
@@ -289,7 +289,7 @@ export default function TherapyGamesPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-3">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent flex items-center gap-3">
             <Gamepad2 className="h-8 w-8 text-primary" />
             Therapy Games
           </h1>
@@ -356,8 +356,8 @@ export default function TherapyGamesPage() {
                 Score: <span className="font-bold text-foreground">{stats.emotionScore}</span>
               </div>
             </div>
-            <Button 
-              className="w-full gap-2" 
+            <Button
+              className="w-full gap-2"
               onClick={() => setActiveGame("emotion")}
             >
               <Play className="h-4 w-4" />
@@ -389,8 +389,8 @@ export default function TherapyGamesPage() {
                 Minutes: <span className="font-bold text-foreground">{stats.breathingMinutes}</span>
               </div>
             </div>
-            <Button 
-              className="w-full gap-2" 
+            <Button
+              className="w-full gap-2"
               variant="outline"
               onClick={() => setActiveGame("breathing")}
             >
@@ -425,8 +425,8 @@ export default function TherapyGamesPage() {
                 </span>
               </div>
             </div>
-            <Button 
-              className="w-full gap-2" 
+            <Button
+              className="w-full gap-2"
               variant="outline"
               onClick={() => setActiveGame("social")}
             >
@@ -450,34 +450,34 @@ export default function TherapyGamesPage() {
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <AchievementBadge 
+            <AchievementBadge
               name="Emotion Expert"
               description="Get 10 correct answers"
               icon={Smile}
               unlocked={stats.achievements.includes("emotion_10")}
             />
-            <AchievementBadge 
+            <AchievementBadge
               name="On Fire"
               description="5 answer streak"
               icon={Flame}
               unlocked={stats.achievements.includes("streak_5")}
             />
-            <AchievementBadge 
+            <AchievementBadge
               name="Zen Master"
               description="Complete 5 breathing sessions"
               icon={Wind}
               unlocked={stats.achievements.includes("breath_5")}
             />
-            <AchievementBadge 
+            <AchievementBadge
               name="Social Star"
               description="5 correct social responses"
               icon={Users}
               unlocked={stats.achievements.includes("social_5")}
             />
-            
+
             {/* Dynamic achievements */}
             {dynamicAchievements.map((achievement) => (
-              <AchievementBadge 
+              <AchievementBadge
                 key={achievement.id}
                 name={achievement.name}
                 description={achievement.description}
@@ -485,7 +485,7 @@ export default function TherapyGamesPage() {
                 unlocked={stats.achievements.includes(achievement.id)}
               />
             ))}
-            
+
             {/* Loading indicator for new achievements */}
             {isLoadingAchievements && (
               <div className="p-4 rounded-xl border-2 border-dashed border-muted text-center animate-pulse">
@@ -497,12 +497,12 @@ export default function TherapyGamesPage() {
               </div>
             )}
           </div>
-          
+
           {/* Generate new achievements button */}
           {stats.totalPoints >= 50 && (
             <div className="mt-4 pt-4 border-t">
-              <Button 
-                variant="outline" 
+              <Button
+                variant="outline"
                 size="sm"
                 className="w-full gap-2"
                 onClick={() => fetchNewAchievements(stats)}
@@ -517,7 +517,7 @@ export default function TherapyGamesPage() {
       </Card>
 
       {/* Game Dialogs */}
-      <EmotionGameDialog 
+      <EmotionGameDialog
         open={activeGame === "emotion"}
         onClose={() => setActiveGame(null)}
         stats={stats}
@@ -528,7 +528,7 @@ export default function TherapyGamesPage() {
         }}
       />
 
-      <BreathingDialog 
+      <BreathingDialog
         open={activeGame === "breathing"}
         onClose={() => setActiveGame(null)}
         stats={stats}
@@ -539,7 +539,7 @@ export default function TherapyGamesPage() {
         }}
       />
 
-      <SocialScenariosDialog 
+      <SocialScenariosDialog
         open={activeGame === "social"}
         onClose={() => setActiveGame(null)}
         stats={stats}
@@ -554,21 +554,21 @@ export default function TherapyGamesPage() {
 }
 
 // Achievement Badge Component
-function AchievementBadge({ 
-  name, 
-  description, 
-  icon: Icon, 
-  unlocked 
-}: { 
+function AchievementBadge({
+  name,
+  description,
+  icon: Icon,
+  unlocked
+}: {
   name: string
   description: string
   icon: any
-  unlocked: boolean 
+  unlocked: boolean
 }) {
   return (
     <div className={cn(
       "p-4 rounded-xl border-2 text-center transition-all",
-      unlocked 
+      unlocked
         ? "bg-gradient-to-br from-yellow-50 to-amber-50 dark:from-yellow-900/20 dark:to-amber-900/20 border-yellow-300"
         : "bg-muted/50 border-muted opacity-50"
     )}>
@@ -585,12 +585,12 @@ function AchievementBadge({
 }
 
 // Emotion Recognition Game Dialog
-function EmotionGameDialog({ 
-  open, 
-  onClose, 
-  stats, 
-  onUpdateStats 
-}: { 
+function EmotionGameDialog({
+  open,
+  onClose,
+  stats,
+  onUpdateStats
+}: {
   open: boolean
   onClose: () => void
   stats: GameStats
@@ -608,7 +608,7 @@ function EmotionGameDialog({
       .sort(() => Math.random() - 0.5)
       .slice(0, 3)
     const allOptions = [...wrongOptions, correct].sort(() => Math.random() - 0.5)
-    
+
     setCurrentEmotion(correct)
     setOptions(allOptions)
     setFeedback(null)
@@ -624,14 +624,14 @@ function EmotionGameDialog({
 
   const handleAnswer = (selected: typeof EMOTIONS[0]) => {
     const isCorrect = selected.name === currentEmotion.name
-    
+
     if (isCorrect) {
       const newStreak = streak + 1
       const newScore = score + 1
       setStreak(newStreak)
       setScore(newScore)
       setFeedback({ correct: true, message: "Correct! Great job!" })
-      
+
       // Update stats
       const newBest = Math.max(stats.emotionBest, newStreak)
       onUpdateStats({
@@ -693,7 +693,7 @@ function EmotionGameDialog({
                 exit={{ opacity: 0 }}
                 className={cn(
                   "p-3 rounded-lg text-center font-medium",
-                  feedback.correct 
+                  feedback.correct
                     ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                     : "bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400"
                 )}
@@ -725,12 +725,12 @@ function EmotionGameDialog({
 }
 
 // Breathing Exercise Dialog
-function BreathingDialog({ 
-  open, 
-  onClose, 
-  stats, 
-  onUpdateStats 
-}: { 
+function BreathingDialog({
+  open,
+  onClose,
+  stats,
+  onUpdateStats
+}: {
   open: boolean
   onClose: () => void
   stats: GameStats
@@ -787,7 +787,7 @@ function BreathingDialog({
 
   const handleStop = () => {
     setIsActive(false)
-    
+
     // Save stats
     const minutes = Math.ceil(totalSeconds / 60)
     if (cycles > 0) {
@@ -845,7 +845,7 @@ function BreathingDialog({
           {/* Breathing visualization */}
           <div className="flex flex-col items-center justify-center py-4">
             <motion.div
-              className="w-28 h-28 rounded-full bg-gradient-to-br from-cyan-400 to-blue-500 flex items-center justify-center text-white shadow-lg"
+              className="w-28 h-28 rounded-full bg-gradient-to-br from-teal-400 to-emerald-500 flex items-center justify-center text-white shadow-lg"
               animate={{ scale: isActive ? getCircleScale() : 1 }}
               transition={{ duration: 0.5, ease: "easeInOut" }}
             >
@@ -898,12 +898,12 @@ function BreathingDialog({
 }
 
 // Social Scenarios Dialog
-function SocialScenariosDialog({ 
-  open, 
-  onClose, 
-  stats, 
-  onUpdateStats 
-}: { 
+function SocialScenariosDialog({
+  open,
+  onClose,
+  stats,
+  onUpdateStats
+}: {
   open: boolean
   onClose: () => void
   stats: GameStats
@@ -925,16 +925,16 @@ function SocialScenariosDialog({
   const generateNewScenarios = async () => {
     setIsLoading(true)
     setError(null)
-    
+
     try {
       const response = await fetch("/api/generate-scenarios", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ difficulty, ageGroup }),
       })
-      
+
       const data = await response.json()
-      
+
       if (data.success && data.scenarios) {
         setScenarios(data.scenarios)
         setShowSettings(false)
@@ -972,7 +972,7 @@ function SocialScenariosDialog({
     setShowFeedback(true)
 
     const isCorrect = currentScenario.options[index].correct
-    
+
     onUpdateStats({
       ...stats,
       socialCorrect: stats.socialCorrect + (isCorrect ? 1 : 0),
@@ -1007,7 +1007,7 @@ function SocialScenariosDialog({
             Social Scenarios
           </DialogTitle>
           <DialogDescription>
-            {showSettings 
+            {showSettings
               ? "Choose your settings and generate new scenarios"
               : `Scenario ${currentIndex + 1} of ${scenarios.length}`
             }
@@ -1023,7 +1023,7 @@ function SocialScenariosDialog({
                   {error}
                 </div>
               )}
-              
+
               {/* Difficulty selector */}
               <div className="space-y-2">
                 <label className="text-sm font-medium">Difficulty Level</label>
@@ -1065,8 +1065,8 @@ function SocialScenariosDialog({
 
               {/* Generate buttons */}
               <div className="flex flex-col gap-2">
-                <Button 
-                  onClick={generateNewScenarios} 
+                <Button
+                  onClick={generateNewScenarios}
                   disabled={isLoading}
                   className="gap-2"
                 >
@@ -1087,7 +1087,7 @@ function SocialScenariosDialog({
                     </>
                   )}
                 </Button>
-                <Button 
+                <Button
                   variant="outline"
                   onClick={() => {
                     setScenarios(DEFAULT_SCENARIOS)
@@ -1137,7 +1137,7 @@ function SocialScenariosDialog({
                   animate={{ opacity: 1, y: 0 }}
                   className={cn(
                     "p-3 rounded-lg text-sm",
-                    currentScenario.options[selectedOption].correct 
+                    currentScenario.options[selectedOption].correct
                       ? "bg-green-100 dark:bg-green-900/30"
                       : "bg-amber-100 dark:bg-amber-900/30"
                   )}

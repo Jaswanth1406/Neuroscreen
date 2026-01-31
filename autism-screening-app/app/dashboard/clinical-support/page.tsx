@@ -107,7 +107,7 @@ const SUGGESTED_PROMPTS = [
 ]
 
 const CATEGORIES = [
-  { value: "Social Skills", color: "bg-blue-500" },
+  { value: "Social Skills", color: "bg-teal-500" },
   { value: "Communication", color: "bg-green-500" },
   { value: "Sensory", color: "bg-purple-500" },
   { value: "Daily Living", color: "bg-orange-500" },
@@ -146,15 +146,15 @@ export default function ClinicalSupportPage() {
         recognition.continuous = true
         recognition.interimResults = true
         recognition.lang = 'en-US'
-        
+
         recognition.onstart = () => {
           setIsListening(true)
         }
-        
+
         recognition.onresult = (event: SpeechRecognitionEvent) => {
           let interim = ''
           let final = ''
-          
+
           for (let i = event.resultIndex; i < event.results.length; i++) {
             const transcript = event.results[i][0].transcript
             if (event.results[i].isFinal) {
@@ -163,7 +163,7 @@ export default function ClinicalSupportPage() {
               interim += transcript
             }
           }
-          
+
           if (final) {
             setVoiceInput(prev => prev + final)
             setInterimTranscript('')
@@ -171,22 +171,22 @@ export default function ClinicalSupportPage() {
             setInterimTranscript(interim)
           }
         }
-        
+
         recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
           console.error('Speech recognition error:', event.error)
           setIsListening(false)
           setInterimTranscript('')
         }
-        
+
         recognition.onend = () => {
           setIsListening(false)
           setInterimTranscript('')
         }
-        
+
         recognitionRef.current = recognition
       }
     }
-    
+
     return () => {
       if (recognitionRef.current) {
         recognitionRef.current.abort()
@@ -196,7 +196,7 @@ export default function ClinicalSupportPage() {
 
   const toggleListening = useCallback(() => {
     if (!recognitionRef.current) return
-    
+
     if (isListening) {
       recognitionRef.current.stop()
     } else {
@@ -438,7 +438,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                       <div className={cn(
                         "rounded-2xl px-4 py-3 shadow-sm",
                         message.role === "user"
-                          ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white rounded-tr-sm"
+                          ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white rounded-tr-sm"
                           : "bg-slate-100 dark:bg-gray-800 rounded-tl-sm"
                       )}>
                         {message.role === "assistant" ? (
@@ -482,8 +482,8 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
 
                       {/* Task extraction */}
                       {message.role === "assistant" && message.content.includes("**Task:**") && (
-                        <div className="mt-3 p-3 rounded-xl bg-gradient-to-r from-blue-50 to-purple-50 dark:from-blue-900/20 dark:to-purple-900/20 border border-blue-200/50 dark:border-blue-800/50 w-full">
-                          <p className="text-xs font-semibold text-blue-700 dark:text-blue-300 mb-2 flex items-center gap-1.5">
+                        <div className="mt-3 p-3 rounded-xl bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20 border border-emerald-200/50 dark:border-emerald-800/50 w-full">
+                          <p className="text-xs font-semibold text-emerald-700 dark:text-emerald-300 mb-2 flex items-center gap-1.5">
                             <Plus className="h-3.5 w-3.5" />
                             Add to Progress Tracker
                           </p>
@@ -493,7 +493,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                                 key={idx}
                                 variant="secondary"
                                 size="sm"
-                                className="gap-1.5 bg-white dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/30 shadow-sm"
+                                className="gap-1.5 bg-white dark:bg-gray-800 hover:bg-emerald-50 dark:hover:bg-emerald-900/30 shadow-sm"
                                 onClick={() => addTask(task.title, `AI-suggested ${task.category.toLowerCase()} task`, task.category)}
                               >
                                 <Plus className="h-3 w-3" />
@@ -508,7 +508,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
 
                     {message.role === "user" && (
                       <div className="flex-shrink-0">
-                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center shadow-lg shadow-purple-500/25">
+                        <div className="w-10 h-10 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/25">
                           <span className="text-white font-semibold text-sm">
                             {session?.user?.name?.charAt(0).toUpperCase() || "U"}
                           </span>
@@ -556,7 +556,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                     >
                       <div className={cn(
                         "p-2 rounded-xl transition-colors",
-                        idx === 0 && "bg-blue-100 dark:bg-blue-900/50 text-blue-600",
+                        idx === 0 && "bg-teal-100 dark:bg-teal-900/50 text-teal-600",
                         idx === 1 && "bg-pink-100 dark:bg-pink-900/50 text-pink-600",
                         idx === 2 && "bg-amber-100 dark:bg-amber-900/50 text-amber-600",
                         idx === 3 && "bg-purple-100 dark:bg-purple-900/50 text-purple-600",
@@ -578,8 +578,8 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
               <form onSubmit={handleSubmit} className="relative">
                 <div className={cn(
                   "flex items-end gap-2 rounded-2xl border bg-slate-50 dark:bg-gray-800 p-2 transition-all shadow-sm",
-                  isListening 
-                    ? "border-red-400 ring-2 ring-red-400/30" 
+                  isListening
+                    ? "border-red-400 ring-2 ring-red-400/30"
                     : "border-border focus-within:border-primary focus-within:ring-2 focus-within:ring-primary/20"
                 )}>
                   <textarea
@@ -628,7 +628,7 @@ Feel free to ask me anything about autism support, therapy techniques, or managi
                     className={cn(
                       "h-10 w-10 rounded-xl transition-all flex-shrink-0",
                       (input.trim() || interimTranscript.trim())
-                        ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
+                        ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg hover:shadow-xl hover:scale-105"
                         : "bg-slate-200 dark:bg-gray-700 text-muted-foreground"
                     )}
                   >

@@ -95,7 +95,7 @@ export default function DashboardPage() {
 
       <div className="space-y-8 relative z-10 py-6">
         {/* Welcome Section */}
-        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-blue-600 via-purple-600 to-indigo-600 p-8 text-white shadow-2xl">
+        <div className="relative overflow-hidden rounded-3xl bg-gradient-to-r from-emerald-600 via-teal-600 to-teal-500 p-8 text-white shadow-2xl">
           <div className="absolute -right-10 -top-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
           <div className="absolute -bottom-10 -left-10 h-40 w-40 rounded-full bg-white/10 blur-3xl" />
           <div className="relative z-10">
@@ -133,8 +133,8 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Total Tasks
               </CardTitle>
-              <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/50">
-                <ListTodo className="h-4 w-4 text-blue-600" />
+              <div className="p-2 rounded-lg bg-teal-100 dark:bg-teal-900/50">
+                <ListTodo className="h-4 w-4 text-teal-600" />
               </div>
             </CardHeader>
             <CardContent>
@@ -167,8 +167,8 @@ export default function DashboardPage() {
               <CardTitle className="text-sm font-medium text-muted-foreground">
                 Progress
               </CardTitle>
-              <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/50">
-                <TrendingUp className="h-4 w-4 text-purple-600" />
+              <div className="p-2 rounded-lg bg-lime-100 dark:bg-lime-900/50">
+                <TrendingUp className="h-4 w-4 text-lime-600" />
               </div>
             </CardHeader>
             <CardContent>
@@ -208,156 +208,156 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
-        </div>
+      </div>
 
-        {/* Main Content */}
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Recent Tasks */}
-          <Card className="border border-white/40 shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-            <CardHeader className="flex flex-row items-center justify-between">
-              <div>
-                <CardTitle className="flex items-center gap-2">
-                  <ListTodo className="h-5 w-5 text-primary" />
-                  Recent Tasks
-                </CardTitle>
-                <CardDescription>
-                  Your latest therapy assignments
-                </CardDescription>
-              </div>
-              <Link href="/dashboard/progress" className="!no-underline ">
-                <Button variant="ghost" size="sm" className="gap-1">
-                  View All <ArrowRight className="h-3 w-3" />
-                </Button>
-              </Link>
-            </CardHeader>
-            <CardContent>
-              {recentTasks.length > 0 ? (
-                <div className="space-y-4">
-                  {recentTasks.map((task) => (
-                    <div
-                      key={task.id}
-                      className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-gray-800/50"
-                    >
-                      <div
-                        className={`p-2 rounded-lg ${task.completed ? "bg-green-100 dark:bg-green-900/50" : "bg-blue-100 dark:bg-blue-900/50"}`}
-                      >
-                        {task.completed ? (
-                          <CheckCircle2 className="h-4 w-4 text-green-600" />
-                        ) : (
-                          <Clock className="h-4 w-4 text-blue-600" />
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className={`font-medium ${task.completed ? "line-through text-muted-foreground" : ""}`}>
-                          {task.title}
-                        </p>
-                        <p className="text-sm text-muted-foreground truncate">
-                          {task.description}
-                        </p>
-                        <Badge variant="outline" className="mt-2 text-xs">
-                          {task.category}
-                        </Badge>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <div className="text-center py-8">
-                  <ListTodo className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
-                  <p className="text-muted-foreground">No tasks yet</p>
-                  <p className="text-sm text-muted-foreground">
-                    Chat with Clinical Support to get personalized tasks
-                  </p>
-                  <Link href="/dashboard/clinical-support" className="!no-underline ">
-                    <Button className="mt-4 gap-2" size="sm">
-                      <MessageSquareHeart className="h-4 w-4" />
-                      Get Started
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Quick Actions */}
-          <Card className="border border-white/40 shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
-            <CardHeader>
+      {/* Main Content */}
+      <div className="grid gap-6 lg:grid-cols-2">
+        {/* Recent Tasks */}
+        <Card className="border border-white/40 shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div>
               <CardTitle className="flex items-center gap-2">
-                <Sparkles className="h-5 w-5 text-amber-500" />
-                Quick Actions
+                <ListTodo className="h-5 w-5 text-primary" />
+                Recent Tasks
               </CardTitle>
               <CardDescription>
-                Get started with these helpful resources
+                Your latest therapy assignments
               </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Link href="/dashboard/clinical-support" className="block !no-underline ">
-                <div className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 shadow-lg">
-                    <MessageSquareHeart className="h-6 w-6 text-white" />
+            </div>
+            <Link href="/dashboard/progress" className="!no-underline ">
+              <Button variant="ghost" size="sm" className="gap-1">
+                View All <ArrowRight className="h-3 w-3" />
+              </Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            {recentTasks.length > 0 ? (
+              <div className="space-y-4">
+                {recentTasks.map((task) => (
+                  <div
+                    key={task.id}
+                    className="flex items-start gap-4 p-4 rounded-xl bg-slate-50 dark:bg-gray-800/50"
+                  >
+                    <div
+                      className={`p-2 rounded-lg ${task.completed ? "bg-green-100 dark:bg-green-900/50" : "bg-teal-100 dark:bg-teal-900/50"}`}
+                    >
+                      {task.completed ? (
+                        <CheckCircle2 className="h-4 w-4 text-green-600" />
+                      ) : (
+                        <Clock className="h-4 w-4 text-teal-600" />
+                      )}
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className={`font-medium ${task.completed ? "line-through text-muted-foreground" : ""}`}>
+                        {task.title}
+                      </p>
+                      <p className="text-sm text-muted-foreground truncate">
+                        {task.description}
+                      </p>
+                      <Badge variant="outline" className="mt-2 text-xs">
+                        {task.category}
+                      </Badge>
+                    </div>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold group-hover:text-primary transition-colors">
-                      Clinical Support AI
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Get personalized therapy recommendations and support
-                    </p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-              </Link>
+                ))}
+              </div>
+            ) : (
+              <div className="text-center py-8">
+                <ListTodo className="h-12 w-12 text-muted-foreground/30 mx-auto mb-4" />
+                <p className="text-muted-foreground">No tasks yet</p>
+                <p className="text-sm text-muted-foreground">
+                  Chat with Clinical Support to get personalized tasks
+                </p>
+                <Link href="/dashboard/clinical-support" className="!no-underline ">
+                  <Button className="mt-4 gap-2" size="sm">
+                    <MessageSquareHeart className="h-4 w-4" />
+                    Get Started
+                  </Button>
+                </Link>
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
-              <Link href="/dashboard/progress" className="block !no-underline ">
-                <div className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
-                    <ListTodo className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold group-hover:text-primary transition-colors">
-                      Progress Tracker
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      View and manage your therapy tasks
-                    </p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-              </Link>
-
-              <Link href="/dashboard/screening" className="block !no-underline ">
-                <div className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
-                  <div className="p-3 rounded-xl bg-gradient-to-br from-purple-500 to-indigo-500 shadow-lg">
-                    <ClipboardCheck className="h-6 w-6 text-white" />
-                  </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold group-hover:text-primary transition-colors">
-                      New Screening
-                    </h3>
-                    <p className="text-sm text-muted-foreground">
-                      Take the AQ-10 autism screening assessment
-                    </p>
-                  </div>
-                  <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
-                </div>
-              </Link>
-
-              <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800">
-                <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg">
-                  <Brain className="h-6 w-6 text-white" />
+        {/* Quick Actions */}
+        <Card className="border border-white/40 shadow-xl bg-white/60 dark:bg-gray-900/60 backdrop-blur-md">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Sparkles className="h-5 w-5 text-amber-500" />
+              Quick Actions
+            </CardTitle>
+            <CardDescription>
+              Get started with these helpful resources
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Link href="/dashboard/clinical-support" className="block !no-underline ">
+              <div className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-pink-500 to-rose-500 shadow-lg">
+                  <MessageSquareHeart className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <h3 className="font-semibold text-amber-800 dark:text-amber-200">
-                    Pro Tip
+                  <h3 className="font-semibold group-hover:text-primary transition-colors">
+                    Clinical Support AI
                   </h3>
-                  <p className="text-sm text-amber-700 dark:text-amber-300">
-                    Regular therapy task completion can help track progress over time
+                  <p className="text-sm text-muted-foreground">
+                    Get personalized therapy recommendations and support
                   </p>
                 </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            </Link>
+
+            <Link href="/dashboard/progress" className="block !no-underline ">
+              <div className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
+                  <ListTodo className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold group-hover:text-primary transition-colors">
+                    Progress Tracker
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    View and manage your therapy tasks
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+            </Link>
+
+            <Link href="/dashboard/screening" className="block !no-underline ">
+              <div className="flex items-center gap-4 p-4 rounded-xl border border-border/50 hover:bg-slate-50 dark:hover:bg-gray-800/50 transition-colors cursor-pointer group">
+                <div className="p-3 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
+                  <ClipboardCheck className="h-6 w-6 text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold group-hover:text-primary transition-colors">
+                    New Screening
+                  </h3>
+                  <p className="text-sm text-muted-foreground">
+                    Take the AQ-10 autism screening assessment
+                  </p>
+                </div>
+                <ArrowRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
+              </div>
+            </Link>
+
+            <div className="flex items-center gap-4 p-4 rounded-xl bg-gradient-to-r from-amber-50 to-orange-50 dark:from-amber-950/30 dark:to-orange-950/30 border border-amber-200 dark:border-amber-800">
+              <div className="p-3 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg">
+                <Brain className="h-6 w-6 text-white" />
+              </div>
+              <div className="flex-1">
+                <h3 className="font-semibold text-amber-800 dark:text-amber-200">
+                  Pro Tip
+                </h3>
+                <p className="text-sm text-amber-700 dark:text-amber-300">
+                  Regular therapy task completion can help track progress over time
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
       </div>
+    </div>
   )
 }

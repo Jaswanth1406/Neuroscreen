@@ -36,7 +36,7 @@ export default function SettingsPage() {
     if (saved) {
       try {
         setNotificationSettings(JSON.parse(saved))
-      } catch {}
+      } catch { }
     }
     // Check browser notification permission
     if ("Notification" in window) {
@@ -98,7 +98,7 @@ export default function SettingsPage() {
           <div className="flex items-center gap-6">
             <Avatar className="h-20 w-20 ring-4 ring-offset-4 ring-primary/20">
               <AvatarImage src={session?.user?.image || ""} />
-              <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-2xl">
+              <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-2xl">
                 {session?.user?.name?.charAt(0).toUpperCase() || "U"}
               </AvatarFallback>
             </Avatar>
@@ -162,15 +162,15 @@ export default function SettingsPage() {
             <div>
               <p className="font-medium">Browser Notifications</p>
               <p className="text-sm text-muted-foreground">
-                {browserPermission === "granted" 
-                  ? "Enabled - You'll receive desktop alerts" 
+                {browserPermission === "granted"
+                  ? "Enabled - You'll receive desktop alerts"
                   : browserPermission === "denied"
-                  ? "Blocked - Enable in browser settings"
-                  : "Get desktop alerts for important updates"}
+                    ? "Blocked - Enable in browser settings"
+                    : "Get desktop alerts for important updates"}
               </p>
             </div>
             {browserPermission === "granted" ? (
-              <Switch 
+              <Switch
                 checked={notificationSettings.browserNotifications}
                 onCheckedChange={(checked) => saveSettings({ ...notificationSettings, browserNotifications: checked })}
               />
@@ -190,7 +190,7 @@ export default function SettingsPage() {
                 Get notified about pending therapy tasks (after 24 hours)
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={notificationSettings.therapyReminders}
               onCheckedChange={(checked) => saveSettings({ ...notificationSettings, therapyReminders: checked })}
             />
@@ -203,7 +203,7 @@ export default function SettingsPage() {
                 Weekly summary of your progress
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={notificationSettings.progressUpdates}
               onCheckedChange={(checked) => saveSettings({ ...notificationSettings, progressUpdates: checked })}
             />
@@ -216,7 +216,7 @@ export default function SettingsPage() {
                 Helpful content about autism support
               </p>
             </div>
-            <Switch 
+            <Switch
               checked={notificationSettings.tipsResources}
               onCheckedChange={(checked) => saveSettings({ ...notificationSettings, tipsResources: checked })}
             />

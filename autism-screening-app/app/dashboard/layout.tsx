@@ -110,9 +110,9 @@ export default function DashboardLayout({
   // Show minimal skeleton while checking auth - don't block the whole page
   if (isPending || !session) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 via-white to-purple-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-emerald-50 via-white to-teal-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900">
         <div className="flex flex-col items-center gap-4">
-          <div className="p-4 rounded-2xl bg-gradient-to-br from-blue-500 to-purple-600 animate-pulse">
+          <div className="p-4 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 animate-pulse">
             <Brain className="h-10 w-10 text-white" />
           </div>
           <p className="text-muted-foreground">Loading...</p>
@@ -124,7 +124,7 @@ export default function DashboardLayout({
   const user = session.user
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-blue-50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
+    <div className="min-h-screen bg-gradient-to-br from-emerald-50/50 via-white to-teal-50/50 dark:from-gray-950 dark:via-gray-900 dark:to-gray-950">
       {/* Mobile sidebar backdrop */}
       {sidebarOpen && (
         <div
@@ -144,10 +144,10 @@ export default function DashboardLayout({
           {/* Logo */}
           <div className="p-6 border-b border-border/50">
             <Link href="/" className="flex items-center gap-3 !no-underline ">
-              <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-purple-600 shadow-lg">
+              <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
                 <Brain className="h-6 w-6 text-white" />
               </div>
-              <span className="text-xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+              <span className="text-xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
                 NeuroScreen
               </span>
             </Link>
@@ -166,14 +166,14 @@ export default function DashboardLayout({
                   className={cn(
                     "!no-underline flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 group",
                     isActive
-                      ? "bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg"
-                      : "hover:bg-slate-100 dark:hover:bg-gray-800 text-muted-foreground hover:text-foreground"
+                      ? "bg-gradient-to-r from-emerald-500 to-teal-600 text-white shadow-lg"
+                      : "hover:bg-emerald-50 dark:hover:bg-emerald-900/10 text-emerald-900/70 dark:text-emerald-100/70 hover:text-emerald-700 dark:hover:text-emerald-300"
                   )}
                 >
-                  <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "group-hover:text-primary")} />
+                  <item.icon className={cn("h-5 w-5", isActive ? "text-white" : "text-emerald-600/70 group-hover:text-emerald-600")} />
                   <div className="flex-1">
                     <div className="font-medium">{item.title}</div>
-                    <div className={cn("text-xs", isActive ? "text-white/70" : "text-muted-foreground")}>
+                    <div className={cn("text-xs", isActive ? "text-white/70" : "text-emerald-600/60 group-hover:text-emerald-600/80")}>
                       {item.description}
                     </div>
                   </div>
@@ -185,10 +185,10 @@ export default function DashboardLayout({
 
           {/* User section */}
           <div className="p-4 border-t border-border/50">
-            <div className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 dark:bg-gray-800/50">
-              <Avatar className="h-10 w-10 ring-2 ring-offset-2 ring-blue-500/20">
+            <div className="flex items-center gap-3 p-3 rounded-xl bg-emerald-50/50 dark:bg-emerald-900/10">
+              <Avatar className="h-10 w-10 ring-2 ring-offset-2 ring-emerald-500/20">
                 <AvatarImage src={user.image || ""} alt={user.name || ""} />
-                <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white">
+                <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white">
                   {user.name?.charAt(0).toUpperCase() || "U"}
                 </AvatarFallback>
               </Avatar>
@@ -253,7 +253,7 @@ export default function DashboardLayout({
                   <Button variant="ghost" size="icon" className="relative">
                     <Avatar className="h-8 w-8">
                       <AvatarImage src={user.image || ""} alt={user.name || ""} />
-                      <AvatarFallback className="bg-gradient-to-br from-blue-500 to-purple-600 text-white text-sm">
+                      <AvatarFallback className="bg-gradient-to-br from-emerald-500 to-teal-600 text-white text-sm">
                         {user.name?.charAt(0).toUpperCase() || "U"}
                       </AvatarFallback>
                     </Avatar>

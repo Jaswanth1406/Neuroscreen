@@ -74,7 +74,7 @@ interface TaskData {
 }
 
 const CHART_COLORS = {
-  primary: "#3b82f6",
+  primary: "#10b981",
   secondary: "#8b5cf6",
   success: "#22c55e",
   warning: "#f59e0b",
@@ -121,7 +121,7 @@ export default function AnalyticsPage() {
   // Filter data by time range
   const filterByTimeRange = (data: any[], dateField: string) => {
     if (timeRange === "all") return data
-    
+
     const now = new Date()
     const ranges: Record<string, number> = {
       "7d": 7,
@@ -129,10 +129,10 @@ export default function AnalyticsPage() {
       "90d": 90,
       "1y": 365,
     }
-    
+
     const days = ranges[timeRange] || 365
     const cutoff = new Date(now.getTime() - days * 24 * 60 * 60 * 1000)
-    
+
     return data.filter(item => new Date(item[dateField]) >= cutoff)
   }
 
@@ -142,13 +142,13 @@ export default function AnalyticsPage() {
   // Calculate statistics
   const stats = {
     totalScreenings: filteredScreenings.length,
-    avgScore: filteredScreenings.length > 0 
+    avgScore: filteredScreenings.length > 0
       ? (filteredScreenings.reduce((sum, s) => sum + s.aq10_total, 0) / filteredScreenings.length).toFixed(1)
       : 0,
     latestRisk: filteredScreenings[0]?.risk_level || "N/A",
     completedTasks: filteredTasks.filter(t => t.completed).length,
     totalTasks: filteredTasks.length,
-    completionRate: filteredTasks.length > 0 
+    completionRate: filteredTasks.length > 0
       ? ((filteredTasks.filter(t => t.completed).length / filteredTasks.length) * 100).toFixed(0)
       : 0,
   }
@@ -215,13 +215,13 @@ export default function AnalyticsPage() {
   // Weekly task completion heatmap data
   const getWeeklyCompletionData = () => {
     const weeks: Record<string, { completed: number; total: number }> = {}
-    
+
     filteredTasks.forEach(task => {
       const date = new Date(task.createdAt)
       const weekStart = new Date(date)
       weekStart.setDate(date.getDate() - date.getDay())
       const weekKey = weekStart.toISOString().split('T')[0]
-      
+
       if (!weeks[weekKey]) {
         weeks[weekKey] = { completed: 0, total: 0 }
       }
@@ -250,7 +250,7 @@ export default function AnalyticsPage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
             Analytics & Progress
           </h1>
           <p className="text-muted-foreground mt-1">
@@ -279,8 +279,8 @@ export default function AnalyticsPage() {
             <CardTitle className="text-sm font-medium text-muted-foreground">
               Total Screenings
             </CardTitle>
-            <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/50">
-              <Brain className="h-4 w-4 text-blue-600" />
+            <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/50">
+              <Brain className="h-4 w-4 text-emerald-600" />
             </div>
           </CardHeader>
           <CardContent>
@@ -354,7 +354,7 @@ export default function AnalyticsPage() {
             </div>
           </CardHeader>
           <CardContent>
-            <Badge 
+            <Badge
               variant="outline"
               className={cn(
                 "text-lg px-3 py-1",
@@ -408,25 +408,25 @@ export default function AnalyticsPage() {
                   <AreaChart data={screeningChartData}>
                     <defs>
                       <linearGradient id="colorAq10" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3}/>
-                        <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0}/>
+                        <stop offset="5%" stopColor={CHART_COLORS.primary} stopOpacity={0.3} />
+                        <stop offset="95%" stopColor={CHART_COLORS.primary} stopOpacity={0} />
                       </linearGradient>
                     </defs>
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="date" className="text-xs" />
                     <YAxis domain={[0, 10]} className="text-xs" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))', 
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
-                      }} 
+                      }}
                     />
-                    <Area 
-                      type="monotone" 
-                      dataKey="aq10" 
-                      stroke={CHART_COLORS.primary} 
-                      fillOpacity={1} 
+                    <Area
+                      type="monotone"
+                      dataKey="aq10"
+                      stroke={CHART_COLORS.primary}
+                      fillOpacity={1}
                       fill="url(#colorAq10)"
                       name="AQ-10 Score"
                     />
@@ -459,26 +459,26 @@ export default function AnalyticsPage() {
                       <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                       <XAxis dataKey="date" className="text-xs" />
                       <YAxis domain={[0, 5]} className="text-xs" />
-                      <Tooltip 
-                        contentStyle={{ 
-                          backgroundColor: 'hsl(var(--card))', 
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: 'hsl(var(--card))',
                           border: '1px solid hsl(var(--border))',
                           borderRadius: '8px'
-                        }} 
+                        }}
                       />
                       <Legend />
-                      <Line 
-                        type="monotone" 
-                        dataKey="social" 
-                        stroke={CHART_COLORS.social} 
+                      <Line
+                        type="monotone"
+                        dataKey="social"
+                        stroke={CHART_COLORS.social}
                         strokeWidth={2}
                         name="Social"
                         dot={{ fill: CHART_COLORS.social }}
                       />
-                      <Line 
-                        type="monotone" 
-                        dataKey="attention" 
-                        stroke={CHART_COLORS.attention} 
+                      <Line
+                        type="monotone"
+                        dataKey="attention"
+                        stroke={CHART_COLORS.attention}
                         strokeWidth={2}
                         name="Attention"
                         dot={{ fill: CHART_COLORS.attention }}
@@ -555,9 +555,9 @@ export default function AnalyticsPage() {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis type="number" className="text-xs" />
                     <YAxis dataKey="name" type="category" width={100} className="text-xs" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))', 
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
                       }}
@@ -594,12 +594,12 @@ export default function AnalyticsPage() {
                     <CartesianGrid strokeDasharray="3 3" className="stroke-muted" />
                     <XAxis dataKey="week" className="text-xs" />
                     <YAxis className="text-xs" />
-                    <Tooltip 
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))', 
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
                         borderRadius: '8px'
-                      }} 
+                      }}
                     />
                     <Legend />
                     <Bar dataKey="completed" stackId="a" fill={CHART_COLORS.success} name="Completed" />
@@ -669,8 +669,8 @@ export default function AnalyticsPage() {
                 <div className="space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/50">
-                        <Brain className="h-5 w-5 text-blue-600" />
+                      <div className="p-2 rounded-lg bg-emerald-100 dark:bg-emerald-900/50">
+                        <Brain className="h-5 w-5 text-emerald-600" />
                       </div>
                       <div>
                         <p className="font-medium">Screenings Completed</p>
@@ -717,7 +717,7 @@ export default function AnalyticsPage() {
                       </div>
                     </div>
                     <span className="text-2xl font-bold">
-                      {filteredScreenings.length > 0 
+                      {filteredScreenings.length > 0
                         ? Math.ceil((new Date().getTime() - new Date(filteredScreenings[filteredScreenings.length - 1].createdAt).getTime()) / (1000 * 60 * 60 * 24))
                         : 0}
                     </span>

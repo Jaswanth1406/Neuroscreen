@@ -227,11 +227,11 @@ for proper evaluation and diagnosis.
         <div className="relative">
           {/* Background decoration */}
           <div className="absolute inset-0 bg-gradient-to-r from-emerald-500/5 via-teal-500/5 to-cyan-500/5 rounded-3xl blur-xl" />
-          
+
           <Card className="relative border-0 shadow-2xl overflow-hidden bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm">
             {/* Decorative top gradient bar */}
             <div className="h-1.5 bg-gradient-to-r from-emerald-500 via-teal-500 to-cyan-500" />
-            
+
             <CardHeader className="pb-2 pt-8">
               <div className="flex items-center justify-center mb-4">
                 <div className="relative">
@@ -246,7 +246,7 @@ for proper evaluation and diagnosis.
                 Create an AI-powered clinical summary of your screening results and therapy progress
               </CardDescription>
             </CardHeader>
-            
+
             <CardContent className="space-y-8 px-8 pb-8">
               {/* Options */}
               <div className="space-y-4">
@@ -254,11 +254,11 @@ for proper evaluation and diagnosis.
                   Report Options
                 </h4>
                 <div className="grid md:grid-cols-2 gap-4 max-w-2xl mx-auto">
-                  <div 
+                  <div
                     className={cn(
                       "flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer",
-                      includeTherapyProgress 
-                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30" 
+                      includeTherapyProgress
+                        ? "border-emerald-500 bg-emerald-50 dark:bg-emerald-950/30"
                         : "border-border hover:border-emerald-300"
                     )}
                     onClick={() => setIncludeTherapyProgress(!includeTherapyProgress)}
@@ -266,8 +266,8 @@ for proper evaluation and diagnosis.
                     <div className="flex items-center gap-3">
                       <div className={cn(
                         "p-2 rounded-xl transition-colors",
-                        includeTherapyProgress 
-                          ? "bg-emerald-500 text-white" 
+                        includeTherapyProgress
+                          ? "bg-emerald-500 text-white"
                           : "bg-slate-100 dark:bg-slate-800 text-muted-foreground"
                       )}>
                         <Target className="h-5 w-5" />
@@ -285,12 +285,12 @@ for proper evaluation and diagnosis.
                       onCheckedChange={setIncludeTherapyProgress}
                     />
                   </div>
-                  
-                  <div 
+
+                  <div
                     className={cn(
                       "flex items-center justify-between p-4 rounded-2xl border-2 transition-all cursor-pointer",
-                      includeRecommendations 
-                        ? "border-teal-500 bg-teal-50 dark:bg-teal-950/30" 
+                      includeRecommendations
+                        ? "border-teal-500 bg-teal-50 dark:bg-teal-950/30"
                         : "border-border hover:border-teal-300"
                     )}
                     onClick={() => setIncludeRecommendations(!includeRecommendations)}
@@ -298,8 +298,8 @@ for proper evaluation and diagnosis.
                     <div className="flex items-center gap-3">
                       <div className={cn(
                         "p-2 rounded-xl transition-colors",
-                        includeRecommendations 
-                          ? "bg-teal-500 text-white" 
+                        includeRecommendations
+                          ? "bg-teal-500 text-white"
                           : "bg-slate-100 dark:bg-slate-800 text-muted-foreground"
                       )}>
                         <ClipboardList className="h-5 w-5" />
@@ -335,8 +335,8 @@ for proper evaluation and diagnosis.
               )}
 
               <div className="flex flex-col items-center gap-4">
-                <Button 
-                  onClick={generateReport} 
+                <Button
+                  onClick={generateReport}
                   disabled={isGenerating}
                   size="lg"
                   className="h-14 px-10 text-lg rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/30 transition-all hover:scale-105"
@@ -355,16 +355,16 @@ for proper evaluation and diagnosis.
                 </Button>
 
                 <p className="text-xs text-muted-foreground text-center max-w-sm">
-                  Reports include AI-generated summaries and are intended to support, not replace, 
+                  Reports include AI-generated summaries and are intended to support, not replace,
                   professional medical advice.
                 </p>
               </div>
-              
+
               {/* Features preview */}
               <div className="grid grid-cols-3 gap-4 pt-4 border-t max-w-2xl mx-auto">
                 <div className="text-center">
-                  <div className="mx-auto w-10 h-10 rounded-xl bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center mb-2">
-                    <Brain className="h-5 w-5 text-blue-500" />
+                  <div className="mx-auto w-10 h-10 rounded-xl bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center mb-2">
+                    <Brain className="h-5 w-5 text-teal-500" />
                   </div>
                   <p className="text-xs font-medium">AI Analysis</p>
                   <p className="text-[10px] text-muted-foreground">Powered by LLM</p>
@@ -402,9 +402,9 @@ for proper evaluation and diagnosis.
               <Download className="h-4 w-4" />
               Download
             </Button>
-            <Button 
-              variant="outline" 
-              onClick={() => setReport(null)} 
+            <Button
+              variant="outline"
+              onClick={() => setReport(null)}
               className="gap-2 ml-auto"
             >
               <RefreshCw className="h-4 w-4" />
@@ -441,7 +441,7 @@ for proper evaluation and diagnosis.
                   </div>
                   <p className="text-2xl font-bold">{report.latestScreening.riskLevel}</p>
                 </div>
-                <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-950 text-blue-600 dark:text-blue-400">
+                <div className="p-4 rounded-lg bg-teal-50 dark:bg-teal-950 text-teal-600 dark:text-teal-400">
                   <div className="flex items-center gap-2 mb-2">
                     <BarChart3 className="h-5 w-5" />
                     <span className="font-medium">Probability</span>
@@ -493,14 +493,14 @@ for proper evaluation and diagnosis.
                 </h3>
                 <div className="space-y-2">
                   {report.latestScreening.contributingFactors.slice(0, 5).map((factor, idx) => (
-                    <div 
+                    <div
                       key={idx}
                       className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900"
                     >
                       <span className="text-sm">{factor.feature}</span>
                       <div className="flex items-center gap-2">
                         <Badge variant="outline">{factor.importance.toFixed(1)}%</Badge>
-                        <Badge 
+                        <Badge
                           variant={factor.direction === "positive" ? "default" : "secondary"}
                           className="text-xs"
                         >
@@ -534,7 +534,7 @@ for proper evaluation and diagnosis.
                     <p className="text-sm text-muted-foreground">Completed</p>
                   </div>
                   <div className="p-4 rounded-lg bg-slate-50 dark:bg-slate-900 text-center">
-                    <p className="text-3xl font-bold text-blue-500">{report.therapyProgress.completionRate}%</p>
+                    <p className="text-3xl font-bold text-teal-500">{report.therapyProgress.completionRate}%</p>
                     <p className="text-sm text-muted-foreground">Completion Rate</p>
                   </div>
                 </div>
@@ -567,7 +567,7 @@ for proper evaluation and diagnosis.
               <CardContent>
                 <div className="space-y-2">
                   {report.screeningHistory.map((screening, idx) => (
-                    <div 
+                    <div
                       key={idx}
                       className="flex items-center justify-between p-3 rounded-lg bg-slate-50 dark:bg-slate-900"
                     >
@@ -575,7 +575,7 @@ for proper evaluation and diagnosis.
                         <div className={cn(
                           "w-3 h-3 rounded-full",
                           screening.riskLevel === "High" ? "bg-red-500" :
-                          screening.riskLevel === "Moderate" ? "bg-amber-500" : "bg-green-500"
+                            screening.riskLevel === "Moderate" ? "bg-amber-500" : "bg-green-500"
                         )} />
                         <span className="text-sm">
                           {new Date(screening.date).toLocaleDateString()}
@@ -620,9 +620,9 @@ for proper evaluation and diagnosis.
                 <div className="text-sm text-amber-700 dark:text-amber-300">
                   <p className="font-medium mb-1">Important Disclaimer</p>
                   <p>
-                    This report is generated by NeuroScreen, an AI-powered autism screening tool. 
-                    It is intended for informational purposes only and should NOT be considered 
-                    a medical diagnosis. Please consult with qualified healthcare professionals 
+                    This report is generated by NeuroScreen, an AI-powered autism screening tool.
+                    It is intended for informational purposes only and should NOT be considered
+                    a medical diagnosis. Please consult with qualified healthcare professionals
                     for proper evaluation, diagnosis, and treatment recommendations.
                   </p>
                 </div>

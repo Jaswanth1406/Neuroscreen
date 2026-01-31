@@ -102,16 +102,16 @@ export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
       {/* Multi-modal Analysis Breakdown */}
       <div className="grid gap-6 md:grid-cols-3">
         {/* 1. Textual Analysis Score (AQ-10) */}
-        <Card className="border-t-4 border-t-blue-500">
+        <Card className="border-t-4 border-t-teal-500">
           <CardHeader className="pb-2">
             <div className="flex items-center gap-2">
-              <ClipboardList className="h-5 w-5 text-blue-500" />
+              <ClipboardList className="h-5 w-5 text-teal-500" />
               <CardTitle className="text-lg">Textual Analysis</CardTitle>
             </div>
             <CardDescription>AQ-10 Questionnaire</CardDescription>
           </CardHeader>
           <CardContent>
-            <div className="text-4xl font-bold text-blue-500 mb-2">
+            <div className="text-4xl font-bold text-teal-500 mb-2">
               {result.aq10_total}
               <span className="text-lg text-muted-foreground font-normal">/10</span>
             </div>
@@ -200,11 +200,11 @@ export function ResultsDashboard({ result, userName }: ResultsDashboardProps) {
 
       {/* Legacy Video Analysis Block (Fallback) */}
       {result.video_analysis?.score !== undefined && result.video_analysis?.physical_score === undefined && (
-        <Card className="border-2 border-indigo-200 dark:border-indigo-800">
+        <Card className="border-2 border-teal-200 dark:border-teal-800">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <div className="p-2 rounded-full bg-indigo-100 dark:bg-indigo-950">
-                <Video className="h-6 w-6 text-indigo-600 dark:text-indigo-400" />
+              <div className="p-2 rounded-full bg-teal-100 dark:bg-teal-950">
+                <Video className="h-6 w-6 text-teal-600 dark:text-teal-400" />
               </div>
               <div>
                 <CardTitle className="text-xl">Legacy Video Analysis</CardTitle>

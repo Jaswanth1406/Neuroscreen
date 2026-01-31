@@ -65,7 +65,7 @@ interface TherapyTask {
 }
 
 const CATEGORIES = [
-  { value: "Social Skills", color: "bg-blue-500" },
+  { value: "Social Skills", color: "bg-teal-500" },
   { value: "Communication", color: "bg-green-500" },
   { value: "Sensory", color: "bg-purple-500" },
   { value: "Daily Living", color: "bg-orange-500" },
@@ -230,7 +230,7 @@ export default function ProgressTrackerPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold flex items-center gap-3">
-            <div className="p-2 rounded-xl bg-gradient-to-br from-blue-500 to-cyan-500 shadow-lg">
+            <div className="p-2 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 shadow-lg">
               <ListTodo className="h-6 w-6 text-white" />
             </div>
             Progress Tracker
@@ -328,11 +328,11 @@ export default function ProgressTrackerPage() {
 
       {/* Stats */}
       <div className="grid gap-4 md:grid-cols-3">
-        <Card className="border-0 shadow-lg bg-gradient-to-br from-blue-50 to-white dark:from-blue-950/30 dark:to-gray-900">
+        <Card className="border-0 shadow-lg bg-gradient-to-br from-teal-50 to-white dark:from-teal-950/30 dark:to-gray-900">
           <CardContent className="pt-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/50">
-                <Target className="h-6 w-6 text-blue-600" />
+              <div className="p-3 rounded-xl bg-teal-100 dark:bg-teal-900/50">
+                <Target className="h-6 w-6 text-teal-600" />
               </div>
               <div>
                 <p className="text-2xl font-bold">{totalCount}</p>

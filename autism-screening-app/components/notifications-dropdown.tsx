@@ -101,13 +101,13 @@ export function NotificationsDropdown() {
     switch (priority) {
       case "high": return "text-red-500 bg-red-50 dark:bg-red-900/20"
       case "medium": return "text-amber-500 bg-amber-50 dark:bg-amber-900/20"
-      default: return "text-blue-500 bg-blue-50 dark:bg-blue-900/20"
+      default: return "text-teal-500 bg-teal-50 dark:bg-teal-900/20"
     }
   }
 
   const getCategoryColor = (category: string) => {
     const colors: Record<string, string> = {
-      "Social Skills": "bg-blue-500",
+      "Social Skills": "bg-teal-500",
       "Communication": "bg-green-500",
       "Sensory": "bg-purple-500",
       "Daily Living": "bg-orange-500",
@@ -186,7 +186,7 @@ export function NotificationsDropdown() {
                           notification.priority === "high" ? "text-red-500" : "text-amber-500"
                         )} />
                       ) : (
-                        <Clock className="h-5 w-5 text-blue-500" />
+                        <Clock className="h-5 w-5 text-teal-500" />
                       )}
                     </div>
                     <div className="flex-1 min-w-0">
